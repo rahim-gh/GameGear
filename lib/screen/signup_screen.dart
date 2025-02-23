@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 
-class Signup extends StatefulWidget {
-  const Signup({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<Signup> createState() => _SignupState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupState extends State<Signup> {
+class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   void navigateToLogin() {
-    Navigator.of(context).pushReplacementNamed('login'); // ✅ ترجع إلى صفحة تسجيل الدخول
+    Navigator.of(context)
+        .pushReplacementNamed('login_screen'); // ✅ ترجع إلى صفحة تسجيل الدخول
   }
 
   @override
@@ -47,8 +48,8 @@ class _SignupState extends State<Signup> {
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 20),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -64,8 +65,8 @@ class _SignupState extends State<Signup> {
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 20),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -82,8 +83,8 @@ class _SignupState extends State<Signup> {
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 20),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -104,7 +105,8 @@ class _SignupState extends State<Signup> {
                     ),
                     child: const Text(
                       "Sign Up",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),

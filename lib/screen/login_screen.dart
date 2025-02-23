@@ -12,7 +12,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   void navigateToSignup() {
-    Navigator.of(context).pushReplacementNamed('signup'); // ✅ استخدم نص صحيح
+    Navigator.of(context)
+        .pushReplacementNamed('signup_screen'); // ✅ استخدم نص صحيح
   }
 
   @override
@@ -46,8 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 20),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -64,8 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 20),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -86,7 +87,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: const Text(
                       "Submit",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -98,7 +100,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     const Text("Don't have an account? "),
                     TextButton(
-                      onPressed: navigateToSignup, // ✅ لا تستخدم الفاصلة بعد `openSignup()`
+                      onPressed:
+                          navigateToSignup, // ✅ لا تستخدم الفاصلة بعد `openSignup()`
                       child: const Text(
                         "Sign up",
                         style: TextStyle(color: Colors.green),
