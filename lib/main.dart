@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'screen/LoginScreen.dart';
+import 'screen/Signup.dart'; // ✅ أضفنا استيراد ملف التسجيل
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -9,28 +11,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: MaterialApp(
-        title: 'GameGear',
-        builder: _applyTextScaleFactor,
-        home: _homeScreen(),
-        debugShowCheckedModeBanner: false,
-      ),
-    );
-  }
-
-  Widget _applyTextScaleFactor(BuildContext context, Widget? child) {
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
-      child: child!,
-    );
-  }
-
-  Widget _homeScreen() {
-    return Scaffold(
-      body: Center(
-        child: Text('Hello, world!'),
-      ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: const LoginScreen(),
+      routes: {
+        'signup': (context) => const Signup(),
+        'login': (context) => const LoginScreen(), // ✅ استخدم اسم صحيح
+      },
     );
   }
 }
