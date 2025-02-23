@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class Signup extends StatefulWidget {
+  const Signup({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<Signup> createState() => _SignupState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupState extends State<Signup> {
+  final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void openSignup() {
-    Navigator.of(context).pushReplacementNamed('signup'); // ✅ استخدم نص صحيح
+  void navigateToLogin() {
+    Navigator.of(context).pushReplacementNamed('login'); // ✅ ترجع إلى صفحة تسجيل الدخول
   }
 
   @override
@@ -30,8 +31,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 Image.asset('assets/images/logo.png', height: 150),
                 const SizedBox(height: 10),
                 const Text(
-                  "Login",
+                  "Sign Up",
                   style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+
+                // حقل الاسم الكامل
+                TextField(
+                  controller: fullNameController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: 'Full Name',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  ),
                 ),
                 const SizedBox(height: 20),
 
@@ -70,12 +88,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // زر تسجيل الدخول
+                // زر التسجيل
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // تنفيذ عملية تسجيل الدخول هنا
+                      // تنفيذ عملية إنشاء الحساب هنا
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -85,22 +103,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     child: const Text(
-                      "Submit",
+                      "Sign Up",
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                // نص التسجيل
+                // نص تسجيل الدخول
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don't have an account? "),
+                    const Text("Already have an account? "),
                     TextButton(
-                      onPressed: openSignup, // ✅ لا تستخدم الفاصلة بعد `openSignup()`
+                      onPressed: navigateToLogin, // ✅ استدعاء الدالة عند الضغط
                       child: const Text(
-                        "Sign up",
+                        "Login",
                         style: TextStyle(color: Colors.green),
                       ),
                     ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screen/LoginScreen.dart';
-import 'screen/Signup.dart'; // ✅ أضفنا استيراد ملف التسجيل
+import 'screen/login_screen.dart';
+import 'screen/signup_screen.dart'; // ✅ أضفنا استيراد ملف التسجيل
 
 void main() {
   runApp(MyApp());
