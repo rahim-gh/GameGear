@@ -1,4 +1,5 @@
 .vscode/
+.cxx/
 
 # Miscellaneous
 *.class
