@@ -71,7 +71,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_validateAllInputs()) {
       // Simulate successful login and navigate to HomeScreen
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(id: 0),
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -83,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.secondary,
+      backgroundColor: AppColor.primary,
       body: SingleChildScrollView(
         child: Center(
           child: Padding(

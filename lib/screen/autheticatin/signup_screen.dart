@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:game_gear/screen/home/home_screen.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
+import 'package:game_gear/shared/model/user_model.dart';
+import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/widget/button_widget.dart';
 import 'package:game_gear/shared/widget/input_widget.dart';
 
@@ -63,10 +65,18 @@ class _SignupScreenState extends State<SignupScreen> {
     return false;
   }
 
-  void handleSignUp() {
+  void handleSignUp() async {
     if (_validateAllInputs()) {
+      final id = await DatabaseService().addUser(
+        fullNameController.text,
+        emailController.text,
+        passwordController.text,
+      );
+      debugPrint('User id: $id');
+
+      if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => HomeScreen(id: id)),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -78,7 +88,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.secondary,
+      backgroundColor: AppColor.primary,
       body: SingleChildScrollView(
         child: Center(
           child: Padding(

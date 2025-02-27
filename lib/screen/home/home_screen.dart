@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/shared/service/database_service.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int id;
+
+  const HomeScreen({
+    super.key,
+    required this.id,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -25,6 +31,12 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
     Center(
       child: Text(
+        'Basket Page',
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+    ),
+    Center(
+      child: Text(
         'Profile Page',
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
@@ -34,6 +46,21 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  String _userInfo = '';
+
+  Future<void> _loadUserData() async {
+    final user = await DatabaseService().getUser(widget.id);
+    setState(() {
+      _userInfo = user.toString();
     });
   }
 
@@ -53,12 +80,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('home'),
-        ],
+      body: Center(
+        // child: _widgetOptions.elementAt(_selectedIndex),
+        child: Text(_userInfo),
       ),
 
       // Bottom Navigation Bar

@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/shared/utils/logger_util.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:logger/web.dart';
 import 'screen/autheticatin/login_screen.dart';
-import 'screen/autheticatin/signup_screen.dart'; // ✅ أضفنا استيراد ملف التسجيل
+import 'screen/autheticatin/signup_screen.dart';
+import 'package:game_gear/shared/model/user_model.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  applog('Initialize the Hive db', level: Level.info);
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(UserAdapter());
+
+  applog('App starting...', level: Level.info);
   runApp(MyApp());
 }
 

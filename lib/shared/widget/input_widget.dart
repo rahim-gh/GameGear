@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/shared/constant/app_color.dart';
 
 class InputWidget extends StatefulWidget {
   final String label;
@@ -115,9 +116,11 @@ class _InputWidgetState extends State<InputWidget> {
       filled: true,
       fillColor: Colors.white,
       hintText: widget.label,
+      hintStyle: TextStyle(
+        color: AppColor.greyShade,
+      ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
     );
