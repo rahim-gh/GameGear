@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:game_gear/shared/service/database_service.dart';
+import 'package:game_gear/shared/widget/navbar_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   final int id;
@@ -86,30 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_basket),
-            label: 'Basket',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        backgroundColor: Colors.black,
-        currentIndex: _selectedIndex,
-        unselectedItemColor: Colors.grey,
-        selectedItemColor: Colors.white,
-        onTap: _onItemTapped,
+      bottomNavigationBar: NavBarWidget(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
