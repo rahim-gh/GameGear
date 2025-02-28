@@ -1,137 +1,108 @@
 import 'package:flutter/material.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
-import 'package:game_gear/shared/widget/snackbar_widget.dart';
-import 'package:logger/web.dart';
+import 'package:logger/logger.dart';
 
-class InputWidget extends StatefulWidget {
+class CustomTextField extends StatefulWidget {
   final String label;
   final TextEditingController controller;
-  final TextInputType keyboardType;
+  final String type; // 'email', 'password', 'name', 'normal'
   final bool obscure;
-  final TextInputAction inputAction;
-  final void Function() onEditingComplete;
+  final TextInputType keyboardType;
+  final TextInputAction textInputAction;
 
-  /// 'email', 'password', 'name'.
-  final String type;
-
-  const InputWidget({
+  const CustomTextField({
     super.key,
     required this.label,
     required this.controller,
-    required this.inputAction,
     required this.type,
-    required this.onEditingComplete,
-    this.keyboardType = TextInputType.emailAddress,
     this.obscure = false,
+    this.keyboardType = TextInputType.text,
+    this.textInputAction = TextInputAction.next,
   });
 
   @override
-  State<InputWidget> createState() => _InputWidgetState();
+  State<CustomTextField> createState() => _CustomTextFieldState();
 }
 
-class _InputWidgetState extends State<InputWidget> {
+class _CustomTextFieldState extends State<CustomTextField> {
+  late bool _obscure;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscure = widget.obscure;
+  }
+
+  String? _validator(String? value) {
+    final input = value?.trim() ?? '';
+
+    if (widget.type.toLowerCase() == 'email') {
+      final regex = RegExp(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
+      if (input.isEmpty) {
+        return 'Email field cannot be empty';
+      } else if (!regex.hasMatch(input)) {
+        return 'Invalid email format';
+      }
+    } else if (widget.type.toLowerCase() == 'password') {
+      final regex =
+          RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$');
+      if (input.isEmpty) {
+        return 'Password field cannot be empty';
+      } else if (!regex.hasMatch(input)) {
+        return 'Password must be at least 8 characters long and include uppercase, lowercase, digits, and special characters';
+      }
+    } else if (widget.type.toLowerCase() == 'name') {
+      final regex = RegExp(r'^[A-Za-z\s]{2,50}$');
+      if (input.isEmpty) {
+        return 'Name field cannot be empty';
+      } else if (!regex.hasMatch(input)) {
+        return 'Name must only contain letters and spaces (2-50 characters)';
+      }
+    } else if (widget.type.toLowerCase() == 'normal') {
+      // No validation rules for a normal text field.
+      return null;
+    } else {
+      applog('Unsupported field type: ${widget.type}', level: Level.error);
+      return 'Unsupported field type';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      textInputAction: widget.inputAction,
+    return TextFormField(
       controller: widget.controller,
+      obscureText: widget.type.toLowerCase() == 'password' ? _obscure : false,
       keyboardType: widget.keyboardType,
-      obscureText: widget.obscure,
-      decoration: _decoration(),
-      onEditingComplete: () {
-        validateInput(widget.type);
-      },
-    );
-  }
-
-  bool validateInput(String type) {
-    final String input = widget.controller.text.trim();
-    bool isValid = false;
-
-    // Email Validation
-    if (type.toLowerCase() == 'email') {
-      final String regexPattern =
-          r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$';
-      final RegExp regex = RegExp(regexPattern);
-      if (input.isEmpty) {
-        SnackbarWidget.show(
-          context: context,
-          message: 'Email field cannot be empty',
-        );
-      } else if (!regex.hasMatch(input)) {
-        SnackbarWidget.show(
-          context: context,
-          message: 'Invalid email format',
-        );
-      } else {
-        isValid = true;
-      }
-    }
-    // Password Validation
-    else if (type.toLowerCase() == 'password') {
-      final String regexPattern =
-          r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
-      final RegExp regex = RegExp(regexPattern);
-      if (input.isEmpty) {
-        SnackbarWidget.show(
-          context: context,
-          message: 'Password field cannot be empty',
-        );
-      } else if (!regex.hasMatch(input)) {
-        SnackbarWidget.show(
-          context: context,
-          message:
-              'Password must be at least 8 characters long and include uppercase, lowercase, digits, and special characters',
-        );
-      } else {
-        isValid = true;
-      }
-    }
-    // Name Validation
-    else if (type.toLowerCase() == 'name') {
-      final String regexPattern = r'^[A-Za-z\s]{2,50}$';
-      final RegExp regex = RegExp(regexPattern);
-      if (input.isEmpty) {
-        SnackbarWidget.show(
-          context: context,
-          message: 'Name field cannot be empty',
-        );
-      } else if (!regex.hasMatch(input)) {
-        SnackbarWidget.show(
-          context: context,
-          message:
-              'Name must only contain letters and spaces, and be 2-50 characters long',
-        );
-      } else {
-        isValid = true;
-      }
-    }
-    // Unsupported Type
-    else {
-      applog('Unsupported field type', level: Level.error);
-      SnackbarWidget.show(
-        context: context,
-        message: 'Unsupported field type',
-      );
-    }
-
-    return isValid;
-  }
-
-  // Decoration for TextField
-  InputDecoration _decoration() {
-    return InputDecoration(
-      filled: true,
-      fillColor: Colors.white,
-      hintText: widget.label,
-      hintStyle: TextStyle(
-        color: AppColor.greyShade,
+      textInputAction: widget.textInputAction,
+      decoration: InputDecoration(
+        labelText: widget.label,
+        filled: true,
+        fillColor: Colors.white,
+        hintStyle: TextStyle(color: AppColor.greyShade),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        errorMaxLines: 2,
+        suffixIcon: widget.type.toLowerCase() == 'password'
+            ? IconButton(
+                icon: Icon(
+                  _obscure
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscure = !_obscure;
+                  });
+                },
+              )
+            : null,
       ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+      validator: _validator,
     );
   }
 }
