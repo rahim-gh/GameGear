@@ -38,7 +38,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     final input = value?.trim() ?? '';
 
     if (widget.type.toLowerCase() == 'email') {
-      final regex = RegExp(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
+      final regex = RegExp(r'^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
       if (input.isEmpty) {
         return 'Email field cannot be empty';
       } else if (!regex.hasMatch(input)) {
@@ -46,11 +46,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
       }
     } else if (widget.type.toLowerCase() == 'password') {
       final regex =
-          RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$');
+          // RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$');
+          RegExp(
+              r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$'); // simplified version
       if (input.isEmpty) {
         return 'Password field cannot be empty';
       } else if (!regex.hasMatch(input)) {
-        return 'Password must be at least 8 characters long and include uppercase, lowercase, digits, and special characters';
+        return 'Password must be at least 8 characters long and include uppercase, lowercase and digits';
       }
     } else if (widget.type.toLowerCase() == 'name') {
       final regex = RegExp(r'^[A-Za-z\s]{2,50}$');
