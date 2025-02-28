@@ -129,14 +129,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
-                  CustomTextField(
+                  InputFieldWidget(
                     controller: emailController,
                     label: 'Email',
                     type: 'email',
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 20),
-                  CustomTextField(
+                  InputFieldWidget(
                     controller: passwordController,
                     label: 'Password',
                     type: 'password',
