@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:game_gear/screen/home/home_screen.dart';
+import 'package:game_gear/shared/service/database_service.dart';
+import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:game_gear/shared/widget/input_widget.dart';
 import 'package:game_gear/shared/widget/button_widget.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
+import 'package:game_gear/shared/widget/snackbar_widget.dart';
+import 'package:logger/logger.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,14 +20,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  late FocusNode emailFocusNode;
-  late FocusNode passwordFocusNode;
+  late final FocusNode emailFocusNode;
+  late final FocusNode passwordFocusNode;
 
   @override
   void initState() {
     super.initState();
     emailFocusNode = FocusNode();
     passwordFocusNode = FocusNode();
+    applog('LoginScreen initialized', level: Level.info);
   }
 
   @override
@@ -32,29 +37,37 @@ class _LoginScreenState extends State<LoginScreen> {
     passwordFocusNode.dispose();
     emailController.dispose();
     passwordController.dispose();
+    applog('LoginScreen disposed', level: Level.info);
     super.dispose();
   }
 
   void navigateToSignup() {
+    applog('Initiating navigation to Signup Screen', level: Level.info);
     Navigator.of(context).pushReplacementNamed('signup_screen');
   }
 
   bool _validateAllInputs() {
-    bool isEmailValid = _validateInput(emailController.text, 'email');
-    bool isPasswordValid = _validateInput(passwordController.text, 'password');
+    final bool isEmailValid = _validateInput(emailController.text, 'email');
+    final bool isPasswordValid =
+        _validateInput(passwordController.text, 'password');
 
     if (!isEmailValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a valid email address.')),
+      SnackbarWidget.show(
+        context: context,
+        message: 'Please enter a valid email address.',
       );
     }
-
     if (!isPasswordValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Password must be at least 6 characters long.')),
+      SnackbarWidget.show(
+        context: context,
+        message: 'Password must be at least 6 characters long.',
       );
     }
 
+    applog(
+      'Inputs validated: Email - $isEmailValid, Password - $isPasswordValid',
+      level: Level.info,
+    );
     return isEmailValid && isPasswordValid;
   }
 
@@ -62,22 +75,72 @@ class _LoginScreenState extends State<LoginScreen> {
     if (type == 'email') {
       return RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value);
     } else if (type == 'password') {
-      return value.length >= 6;
+      return value.length >= 8;
     }
     return false;
   }
 
-  void handleLogin() {
-    if (_validateAllInputs()) {
-      // Simulate successful login and navigate to HomeScreen
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(id: 0),
-        ),
+  void handleLogin() async {
+    try {
+      if (!_validateAllInputs()) {
+        applog(
+          'Form validation failed',
+          level: Level.warning,
+        );
+        return;
+      }
+
+      applog(
+        'Fetching users from database',
+        level: Level.info,
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fix the errors in the form.')),
+      final users = await DatabaseService().getAllUsers();
+
+      // Utilize a loop to safely identify the matching user,
+      // mitigating runtime exceptions from firstWhere.
+      dynamic matchingUser;
+      for (final user in users) {
+        if (user.email == emailController.text) {
+          matchingUser = user;
+          break;
+        }
+      }
+
+      if (matchingUser == null) {
+        if (mounted) {
+          SnackbarWidget.show(
+            context: context,
+            message: 'User not found.',
+          );
+        }
+        applog(
+          'User not found',
+          level: Level.warning,
+        );
+        return;
+      }
+
+      applog(
+        'User found. Navigating to HomeScreen with user id: ${matchingUser.id}',
+        level: Level.info,
+      );
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(id: matchingUser.id),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        SnackbarWidget.show(
+          context: context,
+          message: 'An error occurred: $e',
+        );
+      }
+      applog(
+        'Error during login: $e',
+        level: Level.error,
       );
     }
   }
@@ -121,7 +184,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       FocusScope.of(context).requestFocus(passwordFocusNode),
                 ),
                 const SizedBox(height: 60),
-                // Submit button
                 ButtonWidget(
                   label: 'Login',
                   onPressed: handleLogin,

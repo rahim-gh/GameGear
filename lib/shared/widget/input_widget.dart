@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
+import 'package:game_gear/shared/utils/logger_util.dart';
+import 'package:game_gear/shared/widget/snackbar_widget.dart';
+import 'package:logger/web.dart';
 
 class InputWidget extends StatefulWidget {
   final String label;
@@ -52,12 +55,14 @@ class _InputWidgetState extends State<InputWidget> {
           r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$';
       final RegExp regex = RegExp(regexPattern);
       if (input.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Email field cannot be empty')),
+        SnackbarWidget.show(
+          context: context,
+          message: 'Email field cannot be empty',
         );
       } else if (!regex.hasMatch(input)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid email format')),
+        SnackbarWidget.show(
+          context: context,
+          message: 'Invalid email format',
         );
       } else {
         isValid = true;
@@ -69,14 +74,15 @@ class _InputWidgetState extends State<InputWidget> {
           r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
       final RegExp regex = RegExp(regexPattern);
       if (input.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Password field cannot be empty')),
+        SnackbarWidget.show(
+          context: context,
+          message: 'Password field cannot be empty',
         );
       } else if (!regex.hasMatch(input)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Password must be at least 8 characters long and include uppercase, lowercase, digits, and special characters')),
+        SnackbarWidget.show(
+          context: context,
+          message:
+              'Password must be at least 8 characters long and include uppercase, lowercase, digits, and special characters',
         );
       } else {
         isValid = true;
@@ -87,14 +93,15 @@ class _InputWidgetState extends State<InputWidget> {
       final String regexPattern = r'^[A-Za-z\s]{2,50}$';
       final RegExp regex = RegExp(regexPattern);
       if (input.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Name field cannot be empty')),
+        SnackbarWidget.show(
+          context: context,
+          message: 'Name field cannot be empty',
         );
       } else if (!regex.hasMatch(input)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Name must only contain letters and spaces, and be 2-50 characters long')),
+        SnackbarWidget.show(
+          context: context,
+          message:
+              'Name must only contain letters and spaces, and be 2-50 characters long',
         );
       } else {
         isValid = true;
@@ -102,8 +109,10 @@ class _InputWidgetState extends State<InputWidget> {
     }
     // Unsupported Type
     else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unsupported field type')),
+      applog('Unsupported field type', level: Level.error);
+      SnackbarWidget.show(
+        context: context,
+        message: 'Unsupported field type',
       );
     }
 

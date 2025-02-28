@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:game_gear/screen/home/home_screen.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
-import 'package:game_gear/shared/model/user_model.dart';
 import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/widget/button_widget.dart';
 import 'package:game_gear/shared/widget/input_widget.dart';
+import 'package:game_gear/shared/utils/logger_util.dart';
+import 'package:game_gear/shared/widget/snackbar_widget.dart';
+import 'package:logger/logger.dart';
 
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+  const SignupScreen({Key? key}) : super(key: key);
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
@@ -19,9 +21,9 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  late FocusNode fullNameFocusNode;
-  late FocusNode emailFocusNode;
-  late FocusNode passwordFocusNode;
+  late final FocusNode fullNameFocusNode;
+  late final FocusNode emailFocusNode;
+  late final FocusNode passwordFocusNode;
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _SignupScreenState extends State<SignupScreen> {
     fullNameFocusNode = FocusNode();
     emailFocusNode = FocusNode();
     passwordFocusNode = FocusNode();
+    applog('SignupScreen initialized', level: Level.info);
   }
 
   @override
@@ -39,49 +42,87 @@ class _SignupScreenState extends State<SignupScreen> {
     fullNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    applog('SignupScreen disposed', level: Level.info);
     super.dispose();
   }
 
   void navigateToLogin() {
+    applog('Navigating to Login Screen', level: Level.info);
     Navigator.of(context).pushReplacementNamed('login_screen');
   }
 
   bool _validateAllInputs() {
-    bool isFullNameValid = _validateInput(fullNameController.text, 'name');
-    bool isEmailValid = _validateInput(emailController.text, 'email');
-    bool isPasswordValid = _validateInput(passwordController.text, 'password');
+    final bool isNameValid = _validateInput(fullNameController.text, 'name');
+    final bool isEmailValid = _validateInput(emailController.text, 'email');
+    final bool isPasswordValid =
+        _validateInput(passwordController.text, 'password');
 
-    return isFullNameValid && isEmailValid && isPasswordValid;
+    if (!isNameValid || !isEmailValid || !isPasswordValid) {
+      SnackbarWidget.show(
+        context: context,
+        message: 'Please fix the errors in the form.',
+      );
+    }
+
+    applog(
+      'Input validation: Name - $isNameValid, Email - $isEmailValid, Password - $isPasswordValid',
+      level: Level.info,
+    );
+    return isNameValid && isEmailValid && isPasswordValid;
   }
 
   bool _validateInput(String value, String type) {
-    if (type == 'name') {
-      return value.isNotEmpty;
-    } else if (type == 'email') {
-      return RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value);
-    } else if (type == 'password') {
-      return value.length >= 6;
+    switch (type) {
+      case 'name':
+        return value.trim().isNotEmpty;
+      case 'email':
+        return RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value);
+      case 'password':
+        return value.length >= 6;
+      default:
+        return false;
     }
-    return false;
   }
 
-  void handleSignUp() async {
-    if (_validateAllInputs()) {
+  Future<void> handleSignUp() async {
+    if (!_validateAllInputs()) return;
+
+    try {
+      applog('Attempting to add new user to the database', level: Level.info);
       final id = await DatabaseService().addUser(
-        fullNameController.text,
-        emailController.text,
+        fullNameController.text.trim(),
+        emailController.text.trim(),
         passwordController.text,
       );
-      debugPrint('User id: $id');
 
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomeScreen(id: id)),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fix the errors in the form.')),
-      );
+      if (id == null) {
+        applog(
+          'Signup failed: User creation returned a null id',
+          level: Level.warning,
+        );
+        if (mounted) {
+          SnackbarWidget.show(
+            context: context,
+            message: 'User already exist, try signing in instead.',
+          );
+        }
+        return;
+      }
+
+      applog('User created successfully with id: $id', level: Level.info);
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomeScreen(id: id)),
+        );
+      }
+    } catch (e) {
+      applog('Error during signup: $e', level: Level.error);
+      if (mounted) {
+        SnackbarWidget.show(
+          context: context,
+          message: 'An error occurred during signup: $e',
+        );
+      }
     }
   }
 
@@ -124,8 +165,8 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 20),
                 InputWidget(
-                  label: 'Password',
                   controller: passwordController,
+                  label: 'Password',
                   obscure: true,
                   keyboardType: TextInputType.visiblePassword,
                   inputAction: TextInputAction.done,
