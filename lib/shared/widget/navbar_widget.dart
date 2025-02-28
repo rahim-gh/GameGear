@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/screen/basket/basket_screen.dart';
+import 'package:game_gear/screen/home/home_screen.dart';
+import 'package:game_gear/screen/profile/profile_screen.dart';
+import 'package:game_gear/screen/search/search_screen.dart';
 
 class NavBarWidget extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemTapped;
-
+  static const screenList = [
+    HomeScreen(
+      id: 0,
+    ),
+    SearchScreen(),
+    BasketScreen(),
+    ProfileScreen(),
+  ];
   const NavBarWidget({
     super.key,
     required this.selectedIndex,
@@ -33,9 +44,14 @@ class NavBarWidget extends StatelessWidget {
       ],
       currentIndex: selectedIndex,
       unselectedItemColor: Colors.grey,
-      selectedItemColor: Colors.white,
-      backgroundColor: Colors.black,
-      onTap: onItemTapped,
+      selectedItemColor: Colors.black,
+      onTap: (index) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => screenList[index],
+          ),
+        );
+      },
     );
   }
 }
