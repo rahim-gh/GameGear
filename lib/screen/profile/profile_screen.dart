@@ -11,6 +11,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   int _selectedIndex = 3;
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -39,60 +40,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage(
-                      'assets/images/logo.png'), // Add your image asset
-                ),
-              ),
-              SizedBox(height: 16),
-              Center(
-                child: Text(
-                  'Full Name',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Center(
-                child: Text(
-                  'contact.gamegear@gmail.com',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              ),
+              _buildProfileHeader(),
               SizedBox(height: 24),
-              Text(
-                'Personal Info',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              ListTile(
-                title: Text('Personal Data'),
-                trailing: Icon(Icons.arrow_forward_ios),
-              ),
-              ListTile(
-                title: Text('Payment Info'),
-                trailing: Icon(Icons.arrow_forward_ios),
-              ),
+              _buildSectionTitle('Personal Info'),
+              _buildListTile('Personal Data'),
+              _buildListTile('Payment Info'),
               SizedBox(height: 24),
-              Text(
-                'About',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              ListTile(
-                title: Text('Help Center'),
-                trailing: Icon(Icons.arrow_forward_ios),
-              ),
-              ListTile(
-                title: Text('Privacy Policy'),
-                trailing: Icon(Icons.arrow_forward_ios),
-              ),
-              ListTile(
-                title: Text('About App'),
-                trailing: Icon(Icons.arrow_forward_ios),
-              ),
-              ListTile(
-                title: Text('Terms & Conditions'),
-                trailing: Icon(Icons.arrow_forward_ios),
-              ),
+              _buildSectionTitle('About'),
+              _buildListTile('Help Center'),
+              _buildListTile('Privacy Policy'),
+              _buildListTile('About App'),
+              _buildListTile('Terms & Conditions'),
             ],
           ),
         ),
@@ -101,6 +59,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),
+    );
+  }
+
+  Widget _buildProfileHeader() {
+    return Column(
+      children: [
+        Center(
+          child: CircleAvatar(
+            radius: 50,
+            backgroundImage: AssetImage('assets/images/logo.png'),
+          ),
+        ),
+        SizedBox(height: 16),
+        Center(
+          child: Text(
+            'Full Name',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Center(
+          child: Text(
+            'contact.gamegear@gmail.com',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget _buildListTile(String title) {
+    return Row(
+      children: [
+        ListTile(
+          title: Text(title),
+          trailing: Icon(Icons.arrow_forward_ios),
+        ),
+      ],
     );
   }
 }
