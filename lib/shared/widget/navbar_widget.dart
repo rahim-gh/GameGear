@@ -34,7 +34,7 @@ class NavBarWidget extends StatelessWidget {
           label: 'Search',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_basket),
+          icon: Icon(Icons.shopping_cart),
           label: 'Basket',
         ),
         BottomNavigationBarItem(

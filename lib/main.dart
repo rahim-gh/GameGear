@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/screen/home/home_screen.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:logger/web.dart';
-import 'screen/authetication/login_screen.dart';
-import 'screen/authetication/signup_screen.dart';
+import 'screen/authentication/login_screen.dart';
+import 'screen/authentication/signup_screen.dart';
 import 'package:game_gear/shared/model/user_model.dart';
 
 void main() async {
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
           );
         },
         debugShowCheckedModeBanner: false,
-        home: const LoginScreen(),
+        home: const HomeScreen(id: 0,),
         routes: {
           'signup_screen': (context) => const SignupScreen(),
           'login_screen': (context) => const LoginScreen(),
