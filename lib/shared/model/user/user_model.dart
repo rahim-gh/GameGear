@@ -16,15 +16,19 @@ class User {
   @HiveField(3)
   final String password;
 
+  @HiveField(4)
+  final bool isShopOwner;
+
   User({
     required this.id,
     required this.fullname,
     required this.email,
     required this.password,
+    this.isShopOwner = false,
   });
 
   @override
   String toString() {
-    return 'User{id: $id, fullname: $fullname, email: $email, password: $password}';
+    return 'User{id: $id, fullname: $fullname, email: $email, password: $password, isShopOwner: $isShopOwner}';
   }
 }

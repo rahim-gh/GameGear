@@ -4,7 +4,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:logger/web.dart';
 import 'screen/authetication/login_screen.dart';
 import 'screen/authetication/signup_screen.dart';
-import 'package:game_gear/shared/model/user_model.dart';
+import 'package:game_gear/shared/model/user/user_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
