@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:game_gear/shared/service/database_service.dart';
+import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:game_gear/shared/widget/navbar_widget.dart';
+import 'package:logger/logger.dart';
 
 class HomeScreen extends StatefulWidget {
   final int id;
@@ -59,10 +61,43 @@ class _HomeScreenState extends State<HomeScreen> {
   String _userInfo = '';
 
   Future<void> _loadUserData() async {
-    final user = await DatabaseService().getUser(widget.id);
-    setState(() {
-      _userInfo = user.toString();
-    });
+    try {
+      // Fetch the user data
+      final user = await DatabaseService().getUser(widget.id);
+      if (user == null) {
+        setState(() {
+          _userInfo = "User not found.";
+        });
+        return;
+      }
+
+      // Start building the display string with user details
+      String userData = "User: ${user.toString()}";
+
+      // If the user is a shop owner, fetch their products
+      if (user.isShopOwner) {
+        final products =
+            await DatabaseService().getProductsForShopOwner(user.id);
+        userData += "\n\nProducts:\n";
+        if (products.isEmpty) {
+          userData += "No products found.";
+        } else {
+          for (final product in products) {
+            userData += "$product\n";
+          }
+        }
+      }
+
+      // Update the state with the aggregated information
+      setState(() {
+        _userInfo = userData;
+      });
+    } catch (e) {
+      applog('Error loading user data: $e', level: Level.error);
+      setState(() {
+        _userInfo = "Error loading user data: $e";
+      });
+    }
   }
 
   @override

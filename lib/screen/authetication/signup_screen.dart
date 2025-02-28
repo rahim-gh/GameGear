@@ -22,10 +22,15 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   late final FocusNode fullNameFocusNode;
   late final FocusNode emailFocusNode;
   late final FocusNode passwordFocusNode;
+  late final FocusNode confirmPasswordFocusNode;
+
+  bool _isShopOwner = false;
 
   @override
   void initState() {
@@ -33,6 +38,7 @@ class _SignupScreenState extends State<SignupScreen> {
     fullNameFocusNode = FocusNode();
     emailFocusNode = FocusNode();
     passwordFocusNode = FocusNode();
+    confirmPasswordFocusNode = FocusNode();
     applog('SignupScreen initialized', level: Level.info);
   }
 
@@ -41,9 +47,11 @@ class _SignupScreenState extends State<SignupScreen> {
     fullNameFocusNode.dispose();
     emailFocusNode.dispose();
     passwordFocusNode.dispose();
+    confirmPasswordFocusNode.dispose();
     fullNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    confirmPasswordController.dispose();
     applog('SignupScreen disposed', level: Level.info);
     super.dispose();
   }
@@ -58,12 +66,19 @@ class _SignupScreenState extends State<SignupScreen> {
       applog('Form validation failed', level: Level.warning);
       return;
     }
+    if (passwordController.text.trim() !=
+        confirmPasswordController.text.trim()) {
+      applog('Password confirmation failed', level: Level.warning);
+      SnackbarWidget.show(context: context, message: 'Passwords do not match.');
+      return;
+    }
     try {
       applog('Attempting to add new user to the database', level: Level.info);
       final id = await DatabaseService().addUser(
         fullNameController.text.trim(),
         emailController.text.trim(),
         passwordController.text,
+        isShopOwner: _isShopOwner,
       );
       if (!mounted) return;
       if (id == null) {
@@ -74,7 +89,6 @@ class _SignupScreenState extends State<SignupScreen> {
         );
         return;
       }
-
       applog('User created successfully with id: $id', level: Level.info);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => HomeScreen(id: id)),
@@ -109,27 +123,51 @@ class _SignupScreenState extends State<SignupScreen> {
                     style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
-                  CustomTextField(
+                  InputFieldWidget(
                     controller: fullNameController,
                     label: 'Fullname',
                     type: 'name',
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 20),
-                  CustomTextField(
+                  InputFieldWidget(
                     controller: emailController,
                     label: 'Email',
                     type: 'email',
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 20),
-                  CustomTextField(
+                  InputFieldWidget(
                     controller: passwordController,
                     label: 'Password',
                     type: 'password',
                     obscure: true,
                     keyboardType: TextInputType.visiblePassword,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 20),
+                  InputFieldWidget(
+                    controller: confirmPasswordController,
+                    label: 'Confirm Password',
+                    type: 'password',
+                    obscure: true,
+                    keyboardType: TextInputType.visiblePassword,
                     textInputAction: TextInputAction.done,
+                  ),
+                  const SizedBox(height: 20),
+                  CheckboxListTile(
+                    title: const Text(
+                      "I am a shop owner",
+                      style: TextStyle(color: AppColor.accent),
+                    ),
+                    value: _isShopOwner,
+                    activeColor: AppColor.accent,
+                    checkColor: AppColor.primary,
+                    onChanged: (value) {
+                      setState(() {
+                        _isShopOwner = value ?? false;
+                      });
+                    },
                   ),
                   const SizedBox(height: 20),
                   ButtonWidget(
@@ -142,9 +180,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     children: [
                       const Text(
                         "Already have an account? ",
-                        style: TextStyle(
-                          color: AppColor.greyShade,
-                        ),
+                        style: TextStyle(color: AppColor.greyShade),
                       ),
                       TextButton(
                         onPressed: navigateToLogin,

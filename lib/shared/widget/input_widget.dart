@@ -3,7 +3,7 @@ import 'package:game_gear/shared/constant/app_color.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:logger/logger.dart';
 
-class CustomTextField extends StatefulWidget {
+class InputFieldWidget extends StatefulWidget {
   final String label;
   final TextEditingController controller;
   final String type; // 'email', 'password', 'name', 'normal'
@@ -11,7 +11,7 @@ class CustomTextField extends StatefulWidget {
   final TextInputType keyboardType;
   final TextInputAction textInputAction;
 
-  const CustomTextField({
+  const InputFieldWidget({
     super.key,
     required this.label,
     required this.controller,
@@ -22,10 +22,10 @@ class CustomTextField extends StatefulWidget {
   });
 
   @override
-  State<CustomTextField> createState() => _CustomTextFieldState();
+  State<InputFieldWidget> createState() => _InputFieldWidgetState();
 }
 
-class _CustomTextFieldState extends State<CustomTextField> {
+class _InputFieldWidgetState extends State<InputFieldWidget> {
   late bool _obscure;
 
   @override
