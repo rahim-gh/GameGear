@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:game_gear/screen/home/home_screen.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
-import 'package:game_gear/shared/model/user_model.dart';
 import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/widget/button_widget.dart';
 import 'package:game_gear/shared/widget/input_widget.dart';
