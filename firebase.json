@@ -1,0 +1,25 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "gamegear-1867e",
+          "appId": "1:1074458022954:android:fe346a3dba2c7460bb9f53",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "gamegear-1867e",
+          "configurations": {
+            "android": "1:1074458022954:android:fe346a3dba2c7460bb9f53"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}
