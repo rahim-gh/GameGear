@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:game_gear/screen/home/home_screen.dart';
+import 'package:game_gear/shared/service/auth_service.dart';
+import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
-import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:game_gear/shared/widget/button_widget.dart';
 import 'package:game_gear/shared/widget/input_widget.dart';
@@ -18,7 +20,6 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -30,7 +31,11 @@ class _SignupScreenState extends State<SignupScreen> {
   late final FocusNode passwordFocusNode;
   late final FocusNode confirmPasswordFocusNode;
 
+  // State variable to capture whether the user is a shop owner.
   bool _isShopOwner = false;
+
+  final AuthService _authService = AuthService();
+  final DatabaseService _databaseService = DatabaseService();
 
   @override
   void initState() {
@@ -72,33 +77,38 @@ class _SignupScreenState extends State<SignupScreen> {
       SnackbarWidget.show(context: context, message: 'Passwords do not match.');
       return;
     }
+
     try {
-      applog('Attempting to add new user to the database', level: Level.info);
-      final id = await DatabaseService().addUser(
-        fullNameController.text.trim(),
-        emailController.text.trim(),
-        passwordController.text,
-        isShopOwner: _isShopOwner,
+      final String email = emailController.text.toLowerCase().trim();
+      final String password = passwordController.text.trim();
+      final String fullname = fullNameController.text.trim();
+
+      applog('Attempting to sign up user via Firebase Auth', level: Level.info);
+      final UserCredential credential = await _authService.signUpWithEmail(
+        email: email,
+        password: password,
       );
+
+      // Ensure the newly registered user is authenticated.
+      final String uid = credential.user!.uid;
+
+      // Create the Firestore user document. The isShopOwner flag is passed
+      // so that later the product subcollection can be linked to this user's UID.
+      await _databaseService.addUser(uid, fullname, email, password,
+          isShopOwner: _isShopOwner);
+
       if (!mounted) return;
-      if (id == null) {
-        applog('Signup failed: User already exists', level: Level.warning);
-        SnackbarWidget.show(
-          context: context,
-          message: 'User already exists, try signing in instead.',
-        );
-        return;
-      }
-      applog('User created successfully with id: $id', level: Level.info);
+      applog('User signed up successfully with uid: $uid', level: Level.info);
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomeScreen(id: id)),
+        MaterialPageRoute(builder: (context) => HomeScreen(uid: uid)),
       );
-    } catch (e) {
-      applog('Error during signup: $e', level: Level.error);
+    } on FirebaseAuthException catch (e) {
+      applog('Signup failed: ${e.message}', level: Level.error);
       SnackbarWidget.show(
-        context: context,
-        message: 'An error occurred during signup: $e',
-      );
+          context: context, message: 'Signup failed: ${e.message}');
+    } catch (e) {
+      applog('Unexpected error during signup: $e', level: Level.error);
+      SnackbarWidget.show(context: context, message: 'Signup failed: $e');
     }
   }
 
@@ -128,6 +138,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     label: 'Fullname',
                     type: 'name',
                     textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.name,
                   ),
                   const SizedBox(height: 20),
                   InputFieldWidget(
@@ -135,6 +146,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     label: 'Email',
                     type: 'email',
                     textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 20),
                   InputFieldWidget(
@@ -155,15 +167,13 @@ class _SignupScreenState extends State<SignupScreen> {
                     textInputAction: TextInputAction.done,
                   ),
                   const SizedBox(height: 20),
+                  // Checkbox for shop owner selection
                   CheckboxListTile(
-                    title: const Text(
-                      "I am a shop owner",
-                      style: TextStyle(color: AppColor.accent),
-                    ),
+                    title: const Text("I am a shop owner"),
                     value: _isShopOwner,
                     activeColor: AppColor.accent,
                     checkColor: AppColor.primary,
-                    onChanged: (value) {
+                    onChanged: (bool? value) {
                       setState(() {
                         _isShopOwner = value ?? false;
                       });

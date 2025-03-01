@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/shared/model/product_model.dart';
+import 'package:game_gear/shared/model/user_model.dart';
 import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:game_gear/shared/widget/navbar_widget.dart';
 import 'package:logger/logger.dart';
 
 class HomeScreen extends StatefulWidget {
-  final int id;
+  final String uid;
 
   const HomeScreen({
     super.key,
-    required this.id,
+    required this.uid,
   });
 
   @override
@@ -18,6 +20,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  User? _currentUser;
+  String _userInfo = '';
 
   static const List<Widget> _widgetOptions = <Widget>[
     Center(
@@ -58,26 +62,23 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadUserData();
   }
 
-  String _userInfo = '';
-
   Future<void> _loadUserData() async {
     try {
-      // Fetch the user data
-      final user = await DatabaseService().getUser(widget.id);
+      // Fetch the user data from Firestore.
+      final user = await DatabaseService().getUser(widget.uid);
       if (user == null) {
         setState(() {
           _userInfo = "User not found.";
+          _currentUser = null;
         });
         return;
       }
-
-      // Start building the display string with user details
+      _currentUser = user;
       String userData = "User: ${user.toString()}";
-
-      // If the user is a shop owner, fetch their products
+      // If the user is a shop owner, fetch and display their products.
       if (user.isShopOwner) {
         final products =
-            await DatabaseService().getProductsForShopOwner(user.id);
+            await DatabaseService().getProductsForShopOwner(user.uid);
         userData += "\n\nProducts:\n";
         if (products.isEmpty) {
           userData += "No products found.";
@@ -87,8 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         }
       }
-
-      // Update the state with the aggregated information
       setState(() {
         _userInfo = userData;
       });
@@ -97,6 +96,40 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _userInfo = "Error loading user data: $e";
       });
+    }
+  }
+
+  /// Adds a sample product to the shop owner's Firestore subcollection.
+  Future<void> _addProduct() async {
+    if (_currentUser == null || !_currentUser!.isShopOwner) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Only shop owners can add products.")),
+      );
+      return;
+    }
+    try {
+      final Product newProduct = Product(
+        id: 0,
+        name: "product",
+        description: "description",
+        price: 23.9,
+        tags: ["keyboard", "rgb"],
+      );
+      final int productId = await DatabaseService()
+          .addProductForShopOwner(_currentUser!.uid, newProduct);
+      applog("Added product '${newProduct.name}' with product id: $productId",
+          level: Level.info);
+      await _loadUserData();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Product added successfully.")),
+      );
+    } catch (e) {
+      applog("Error adding product: $e", level: Level.error);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to add product: $e")),
+      );
     }
   }
 
@@ -117,15 +150,19 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Center(
-        // child: _widgetOptions.elementAt(_selectedIndex),
         child: Text(_userInfo),
       ),
-
-      // Bottom Navigation Bar
       bottomNavigationBar: NavBarWidget(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),
+      floatingActionButton: (_currentUser != null && _currentUser!.isShopOwner)
+          ? FloatingActionButton(
+              onPressed: _addProduct,
+              child: const Icon(Icons.add),
+              tooltip: "Add Product",
+            )
+          : null,
     );
   }
 }

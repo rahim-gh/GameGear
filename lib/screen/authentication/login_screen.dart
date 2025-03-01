@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:game_gear/screen/home/home_screen.dart';
-import 'package:game_gear/shared/service/database_service.dart';
+import 'package:game_gear/shared/service/auth_service.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:game_gear/shared/widget/button_widget.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
@@ -18,12 +19,12 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   late final FocusNode emailFocusNode;
   late final FocusNode passwordFocusNode;
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -44,67 +45,41 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void navigateToSignup() {
-    applog('Initiating navigation to Signup Screen', level: Level.info);
+    applog('Navigating to Signup Screen', level: Level.info);
     Navigator.of(context).pushReplacementNamed('signup_screen');
   }
 
   Future<void> handleLogin() async {
+    if (!_formKey.currentState!.validate()) {
+      applog('Form validation failed', level: Level.warning);
+      return;
+    }
+
     try {
-      if (!_formKey.currentState!.validate()) {
-        applog('Form validation failed', level: Level.warning);
-        return;
-      }
+      final String email = emailController.text.toLowerCase().trim();
+      final String password = passwordController.text.trim();
 
-      applog('Fetching users from database', level: Level.info);
-      final users = await DatabaseService().getAllUsers();
-
-      dynamic matchingUser;
-      bool isPasswordValid = false;
-      for (final user in users) {
-        if (user.email == emailController.text.toLowerCase().trim()) {
-          if (user.password == passwordController.text.trim()) {
-            isPasswordValid = true;
-          }
-
-          matchingUser = user;
-          break;
-        }
-      }
+      applog('Attempting to sign in user via Firebase Auth', level: Level.info);
+      final UserCredential credential = await _authService.signInWithEmail(
+        email: email,
+        password: password,
+      );
 
       if (!mounted) return;
-      if (matchingUser == null) {
-        SnackbarWidget.show(
-          context: context,
-          message: 'User not found.',
-        );
-        applog('User not found', level: Level.warning);
-        return;
-      }
-      if (isPasswordValid == false) {
-        SnackbarWidget.show(
-          context: context,
-          message: 'Incorrect password',
-        );
-        applog(
-          'Incorrect password',
-          level: Level.error,
-        );
-        return;
-      }
-
       applog(
-          'User found. Navigating to HomeScreen with user id: ${matchingUser.id}',
+          'Login successful. Navigating to HomeScreen with uid: ${credential.user?.uid}',
           level: Level.info);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-            builder: (context) => HomeScreen(id: matchingUser.id)),
+            builder: (context) => HomeScreen(uid: credential.user!.uid)),
       );
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
+      applog('Login failed: ${e.message}', level: Level.error);
       SnackbarWidget.show(
-        context: context,
-        message: 'An error occurred: $e',
-      );
-      applog('Error during login: $e', level: Level.error);
+          context: context, message: 'Login failed: ${e.message}');
+    } catch (e) {
+      applog('Unexpected error during login: $e', level: Level.error);
+      SnackbarWidget.show(context: context, message: 'Login failed: $e');
     }
   }
 
@@ -134,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     label: 'Email',
                     type: 'email',
                     textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 20),
                   InputFieldWidget(
@@ -155,9 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const Text(
                         "Don't have an account? ",
-                        style: TextStyle(
-                          color: AppColor.greyShade,
-                        ),
+                        style: TextStyle(color: AppColor.greyShade),
                       ),
                       TextButton(
                         onPressed: navigateToSignup,
