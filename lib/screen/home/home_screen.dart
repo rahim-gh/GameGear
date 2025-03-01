@@ -159,8 +159,8 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: (_currentUser != null && _currentUser!.isShopOwner)
           ? FloatingActionButton(
               onPressed: _addProduct,
-              child: const Icon(Icons.add),
               tooltip: "Add Product",
+              child: const Icon(Icons.add),
             )
           : null,
     );
