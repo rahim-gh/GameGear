@@ -60,12 +60,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             'Personal Info',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          SettingChoice(
+          SettingChoiceWidget(
             leading: Icons.person_outline,
             title: 'Personal Info',
             onTap: () {},
           ),
-          SettingChoice(
+          SettingChoiceWidget(
             leading: Icons.payment,
             title: 'Payment Info',
             onTap: () {},
@@ -75,22 +75,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             'About',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          SettingChoice(
+          SettingChoiceWidget(
             title: 'Help Center',
             leading: Icons.help_outline_rounded,
             onTap: () {},
           ),
-          SettingChoice(
+          SettingChoiceWidget(
             title: 'Privacy Policy',
             leading: Icons.lock_outlined,
             onTap: () {},
           ),
-          SettingChoice(
+          SettingChoiceWidget(
             title: 'About App',
             leading: Icons.info_outlined,
             onTap: () {},
           ),
-          SettingChoice(
+          SettingChoiceWidget(
             title: 'Terms & Conditions',
             leading: Icons.book_outlined,
             onTap: () {},

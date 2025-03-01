@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class SettingChoice extends StatelessWidget {
+class SettingChoiceWidget extends StatelessWidget {
   final IconData leading;
   final String title;
   final VoidCallback onTap;
-  const SettingChoice({
+  const SettingChoiceWidget({
     super.key,
     required this.leading,
     required this.title,

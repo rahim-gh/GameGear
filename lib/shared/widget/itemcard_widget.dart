@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
 
-class ItemCard extends StatelessWidget {
+class ItemCardWidget extends StatelessWidget {
   final int index;
-  const ItemCard({
+  const ItemCardWidget({
     super.key,
     required this.index,
   });

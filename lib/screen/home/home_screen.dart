@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView.builder(
         itemCount: AppAsset.elements.length,
         itemBuilder: (context, index) {
-          return ItemCard(index: index);
+          return ItemCardWidget(index: index);
         },
       ),
 
