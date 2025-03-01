@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/screen/basket/basket_screen.dart';
-import 'package:game_gear/screen/home/home_screen.dart';
-import 'package:game_gear/screen/profile/profile_screen.dart';
-import 'package:game_gear/screen/search/search_screen.dart';
 
 class NavBarWidget extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemTapped;
   static const screenList = [
-    HomeScreen(
-      id: 0,
-    ),
-    SearchScreen(),
-    BasketScreen(),
-    ProfileScreen(),
+    'home_screen',
+    'search_screen',
+    'basket_screen',
+    'profile_screen'
   ];
   const NavBarWidget({
     super.key,
@@ -23,6 +17,7 @@ class NavBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
@@ -46,11 +41,8 @@ class NavBarWidget extends StatelessWidget {
       unselectedItemColor: Colors.grey,
       selectedItemColor: Colors.black,
       onTap: (index) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => screenList[index],
-          ),
-        );
+        onItemTapped(index);
+        Navigator.of(context).pushReplacementNamed(screenList[index]);
       },
     );
   }

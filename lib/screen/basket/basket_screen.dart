@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/shared/widget/appbar_widget.dart';
 import 'package:game_gear/shared/widget/navbar_widget.dart';
 
 class BasketScreen extends StatefulWidget {
@@ -20,19 +21,7 @@ class _BasketScreenState extends State<BasketScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Basket'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Notifications')),
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: AppBarWidget(title: "Basket"),
 
       bottomNavigationBar: NavBarWidget(
         selectedIndex: _selectedIndex,
