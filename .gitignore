@@ -1,5 +1,8 @@
 .vscode/
 .cxx/
+.idx/
+google-services.json
+
 
 # Miscellaneous
 *.class
