@@ -1,10 +1,15 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:game_gear/screen/basket/basket_screen.dart';
+import 'package:game_gear/screen/home/home_screen.dart';
+import 'package:game_gear/screen/profile/profile_screen.dart';
+import 'package:game_gear/screen/search/search_screen.dart';
 import 'package:game_gear/firebase_options.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:logger/web.dart';
 import 'screen/authentication/login_screen.dart';
 import 'screen/authentication/signup_screen.dart';
+import 'package:game_gear/shared/model/user_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,10 +39,17 @@ class MyApp extends StatelessWidget {
           );
         },
         debugShowCheckedModeBanner: false,
-        home: const LoginScreen(),
+        home: const ProfileScreen(
+        ),
         routes: {
           'signup_screen': (context) => const SignupScreen(),
           'login_screen': (context) => const LoginScreen(),
+          'home_screen': (context) => const HomeScreen(
+                id: 0,
+              ),
+          'search_screen': (context) => const SearchScreen(),
+          'basket_screen': (context) => const BasketScreen(),
+          'profile_screen': (context) => const ProfileScreen(),
         },
       ),
     );

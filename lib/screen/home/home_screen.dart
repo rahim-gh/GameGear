@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/shared/constant/app_asset.dart';
+import 'package:game_gear/shared/constant/app_color.dart';
+import 'package:game_gear/shared/service/database_service.dart';
+import 'package:game_gear/shared/widget/appbar_widget.dart';
+import 'package:game_gear/shared/widget/itemcard_widget.dart';
 import 'package:game_gear/shared/model/product_model.dart';
 import 'package:game_gear/shared/model/user_model.dart';
 import 'package:game_gear/shared/service/database_service.dart';
@@ -136,21 +141,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Notifications')),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Text(_userInfo),
+      backgroundColor: AppColor.secondary,
+      appBar: AppBarWidget(title: 'Home'),
+      body: ListView.builder(
+        itemCount: AppAsset.elements.length,
+        itemBuilder: (context, index) {
+          return ItemCardWidget(index: index);
+        },
       ),
       bottomNavigationBar: NavBarWidget(
         selectedIndex: _selectedIndex,
@@ -166,3 +163,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 class NavBarWidget extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemTapped;
-
+  static const screenList = [
+    'home_screen',
+    'search_screen',
+    'basket_screen',
+    'profile_screen'
+  ];
   const NavBarWidget({
     super.key,
     required this.selectedIndex,
@@ -12,6 +17,7 @@ class NavBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
@@ -23,7 +29,7 @@ class NavBarWidget extends StatelessWidget {
           label: 'Search',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_basket),
+          icon: Icon(Icons.shopping_cart),
           label: 'Basket',
         ),
         BottomNavigationBarItem(
@@ -33,9 +39,11 @@ class NavBarWidget extends StatelessWidget {
       ],
       currentIndex: selectedIndex,
       unselectedItemColor: Colors.grey,
-      selectedItemColor: Colors.white,
-      backgroundColor: Colors.black,
-      onTap: onItemTapped,
+      selectedItemColor: Colors.black,
+      onTap: (index) {
+        onItemTapped(index);
+        Navigator.of(context).pushReplacementNamed(screenList[index]);
+      },
     );
   }
 }
