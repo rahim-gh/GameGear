@@ -6,7 +6,6 @@ import 'package:game_gear/shared/widget/appbar_widget.dart';
 import 'package:game_gear/shared/widget/itemcard_widget.dart';
 import 'package:game_gear/shared/model/product_model.dart';
 import 'package:game_gear/shared/model/user_model.dart';
-import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:game_gear/shared/widget/navbar_widget.dart';
 import 'package:logger/logger.dart';

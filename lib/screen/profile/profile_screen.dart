@@ -10,7 +10,8 @@ class ProfileScreen extends StatefulWidget {
     super.key,
   });
 
-  _ProfileScreenState createState() => _ProfileScreenState();
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {

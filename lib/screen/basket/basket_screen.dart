@@ -7,7 +7,7 @@ class BasketScreen extends StatefulWidget {
     super.key,
   });
   @override
-  _BasketScreenState createState() => _BasketScreenState();
+  State<BasketScreen> createState() => _BasketScreenState();
 }
 
 class _BasketScreenState extends State<BasketScreen> {
