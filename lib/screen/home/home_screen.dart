@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
+import 'package:game_gear/shared/service/auth_service.dart';
 import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/widget/appbar_widget.dart';
 import 'package:game_gear/shared/widget/itemcard_widget.dart';
@@ -25,13 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
   User? _currentUser;
   String _userInfo = '';
 
-  final String uid = '0';
+  final String uid = AuthService().currentUser!.uid;
 
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+
   }
 
   Future<void> _loadUserData() async {
@@ -116,6 +118,13 @@ class _HomeScreenState extends State<HomeScreen> {
         itemBuilder: (context, index) {
           return ItemCardWidget(index: index);
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          AuthService().signOut(context);
+        },
+        backgroundColor: AppColor.accent,
+        child: Icon(Icons.logout),
       ),
       // floatingActionButton: (_currentUser != null && _currentUser!.isShopOwner)
       //     ? FloatingActionButton(
