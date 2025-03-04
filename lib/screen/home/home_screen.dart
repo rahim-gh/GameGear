@@ -4,19 +4,16 @@ import 'package:game_gear/shared/constant/app_color.dart';
 import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/widget/appbar_widget.dart';
 import 'package:game_gear/shared/widget/itemcard_widget.dart';
-import 'package:game_gear/shared/model/product_model.dart';
 import 'package:game_gear/shared/model/user_model.dart';
-import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
-import 'package:game_gear/shared/widget/navbar_widget.dart';
 import 'package:logger/logger.dart';
 
 class HomeScreen extends StatefulWidget {
-  final String uid;
+  // final String uid;
 
   const HomeScreen({
     super.key,
-    required this.uid,
+    // required this.uid,
   });
 
   @override
@@ -24,42 +21,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+  // int _selectedIndex = 0;
   User? _currentUser;
   String _userInfo = '';
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Center(
-      child: Text(
-        'Home Page',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-    Center(
-      child: Text(
-        'Search Page',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-    Center(
-      child: Text(
-        'Basket Page',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-    Center(
-      child: Text(
-        'Profile Page',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-  ];
+  final String uid = '0';
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   void initState() {
@@ -70,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadUserData() async {
     try {
       // Fetch the user data from Firestore.
-      final user = await DatabaseService().getUser(widget.uid);
+      final user = await DatabaseService().getUser(uid);
       if (user == null) {
         setState(() {
           _userInfo = "User not found.";
@@ -105,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Adds a sample product to the shop owner's Firestore subcollection.
-  Future<void> _addProduct() async {
+  /* Future<void> _addProduct() async {
     if (_currentUser == null || !_currentUser!.isShopOwner) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Only shop owners can add products.")),
@@ -137,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
   }
+ */
 
   @override
   Widget build(BuildContext context) {
@@ -149,18 +117,14 @@ class _HomeScreenState extends State<HomeScreen> {
           return ItemCardWidget(index: index);
         },
       ),
-      bottomNavigationBar: NavBarWidget(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-      ),
-      floatingActionButton: (_currentUser != null && _currentUser!.isShopOwner)
-          ? FloatingActionButton(
-              onPressed: _addProduct,
-              tooltip: "Add Product",
-              child: const Icon(Icons.add),
-            )
-          : null,
+      // floatingActionButton: (_currentUser != null && _currentUser!.isShopOwner)
+      //     ? FloatingActionButton(
+      //         onPressed: _addProduct,
+      //         tooltip: "Add Product",
+      //         child: const Icon(Icons.add),
+      //       )
+      //     : null,
+
     );
   }
 }
-

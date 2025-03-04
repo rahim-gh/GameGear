@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
 import 'package:game_gear/shared/widget/appbar_widget.dart';
-import 'package:game_gear/shared/widget/navbar_widget.dart';
 import 'package:game_gear/shared/widget/settingchoice_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -10,16 +9,11 @@ class ProfileScreen extends StatefulWidget {
     super.key,
   });
 
-  _ProfileScreenState createState() => _ProfileScreenState();
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final int _selectedIndex = 3;
-
-  void _onItemTapped(int index) {
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,10 +91,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ]),
       )),
-      bottomNavigationBar: NavBarWidget(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-      ),
     );
   }
 }

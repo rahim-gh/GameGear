@@ -6,14 +6,8 @@ import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/widget/button_widget.dart';
 import 'package:game_gear/shared/widget/input_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:game_gear/screen/home/home_screen.dart';
 import 'package:game_gear/shared/service/auth_service.dart';
-import 'package:game_gear/shared/service/database_service.dart';
-import 'package:game_gear/shared/constant/app_asset.dart';
-import 'package:game_gear/shared/constant/app_color.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
-import 'package:game_gear/shared/widget/button_widget.dart';
-import 'package:game_gear/shared/widget/input_widget.dart';
 import 'package:game_gear/shared/widget/snackbar_widget.dart';
 import 'package:logger/logger.dart';
 
@@ -106,7 +100,7 @@ class _SignupScreenState extends State<SignupScreen> {
       if (!mounted) return;
       applog('User signed up successfully with uid: $uid', level: Level.info);
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomeScreen(uid: uid)),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } on FirebaseAuthException catch (e) {
       applog('Signup failed: ${e.message}', level: Level.error);
