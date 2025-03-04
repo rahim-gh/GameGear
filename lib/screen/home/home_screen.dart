@@ -119,13 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return ItemCardWidget(index: index);
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          AuthService().signOut(context);
-        },
-        backgroundColor: AppColor.accent,
-        child: Icon(Icons.logout),
-      ),
+     
       // floatingActionButton: (_currentUser != null && _currentUser!.isShopOwner)
       //     ? FloatingActionButton(
       //         onPressed: _addProduct,
