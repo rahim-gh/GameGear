@@ -100,7 +100,7 @@ class _SignupScreenState extends State<SignupScreen> {
       if (!mounted) return;
       applog('User signed up successfully with uid: $uid', level: Level.info);
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomeScreen(uid: uid)),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     } on FirebaseAuthException catch (e) {
       applog('Signup failed: ${e.message}', level: Level.error);

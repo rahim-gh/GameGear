@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/screen/home/home_screen.dart';
 import 'package:game_gear/screen/main/main_screen.dart';
 import 'package:game_gear/shared/widget/input_widget.dart';
 import 'package:game_gear/shared/widget/button_widget.dart';

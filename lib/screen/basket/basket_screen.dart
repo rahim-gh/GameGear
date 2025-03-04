@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:game_gear/shared/widget/appbar_widget.dart';
-import 'package:game_gear/shared/widget/navbar_widget.dart';
 
 class BasketScreen extends StatefulWidget {
   const BasketScreen({
@@ -11,13 +10,6 @@ class BasketScreen extends StatefulWidget {
 }
 
 class _BasketScreenState extends State<BasketScreen> {
-  int _selectedIndex = 2;
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
