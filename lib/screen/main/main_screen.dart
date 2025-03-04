@@ -1,20 +1,6 @@
-/// MainScreen is a stateful widget that serves as the main entry point for the app's primary screens.
-/// It includes a bottom navigation bar to switch between different screens: Home, Search, Basket, and Profile.
-///
-/// The widget takes a required `uid` parameter which represents the user's unique identifier.
-///
-/// The `_MainScreenState` class manages the state of the MainScreen, including the currently selected
-/// index of the bottom navigation bar and the corresponding screen to display.
-///
-/// The `_widgetOptions` list centralizes the different screens as widgets, and the `_onItemTapped`
-/// method updates the selected index when a navigation item is tapped.
-///
-/// The `build` method constructs the UI, which includes a `Scaffold` to display the selected screen
-/// and a `NavBarWidget` positioned at the bottom for navigation.
-library;
-
 import 'package:flutter/material.dart';
 import 'package:game_gear/screen/home/home_screen.dart';
+import 'package:game_gear/screen/main/logic/nav_bar_visibility_controller.dart';
 import 'package:game_gear/screen/search/search_screen.dart';
 import 'package:game_gear/screen/basket/basket_screen.dart';
 import 'package:game_gear/screen/profile/profile_screen.dart';
@@ -33,8 +19,9 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  final NavBarVisibilityController _navBarController = NavBarVisibilityController();
 
-  // Centralize the screens as a widget list
+  // List of screens.
   List<Widget> get _widgetOptions => [
         const HomeScreen(),
         const SearchScreen(),
@@ -49,19 +36,46 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   @override
+  void dispose() {
+    _navBarController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Scaffold(
-          body: _widgetOptions[_selectedIndex],
+          // Wrap the screen content with a NotificationListener.
+          body: NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              if (notification is ScrollUpdateNotification) {
+                _navBarController.onScroll(notification.metrics.pixels);
+              }
+              return false;
+            },
+            child: _widgetOptions[_selectedIndex],
+          ),
         ),
+        // Animate the nav bar based on the controller's visibility state.
         Positioned(
           left: 0,
           right: 0,
           bottom: 0,
-          child: NavBarWidget(
-            selectedIndex: _selectedIndex,
-            onItemTapped: _onItemTapped,
+          child: AnimatedBuilder(
+            animation: _navBarController,
+            builder: (context, child) {
+              return AnimatedSlide(
+                duration: const Duration(milliseconds: 100),
+                // Slide out of view when hidden.
+                offset: _navBarController.isVisible ? Offset.zero : const Offset(0, 1),
+                child: child,
+              );
+            },
+            child: NavBarWidget(
+              selectedIndex: _selectedIndex,
+              onItemTapped: _onItemTapped,
+            ),
           ),
         ),
       ],
