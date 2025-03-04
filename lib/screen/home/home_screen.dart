@@ -27,32 +27,32 @@ class _HomeScreenState extends State<HomeScreen> {
   User? _currentUser;
   String _userInfo = '';
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Center(
-      child: Text(
-        'Home Page',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-    Center(
-      child: Text(
-        'Search Page',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-    Center(
-      child: Text(
-        'Basket Page',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-    Center(
-      child: Text(
-        'Profile Page',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
-  ];
+  // static const List<Widget> _widgetOptions = <Widget>[
+  //   Center(
+  //     child: Text(
+  //       'Home Page',
+  //       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+  //     ),
+  //   ),
+  //   Center(
+  //     child: Text(
+  //       'Search Page',
+  //       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+  //     ),
+  //   ),
+  //   Center(
+  //     child: Text(
+  //       'Basket Page',
+  //       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+  //     ),
+  //   ),
+  //   Center(
+  //     child: Text(
+  //       'Profile Page',
+  //       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+  //     ),
+  //   ),
+  // ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Adds a sample product to the shop owner's Firestore subcollection.
-  Future<void> _addProduct() async {
+  /* Future<void> _addProduct() async {
     if (_currentUser == null || !_currentUser!.isShopOwner) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Only shop owners can add products.")),
@@ -136,7 +136,8 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
   }
-
+ */
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,17 +149,17 @@ class _HomeScreenState extends State<HomeScreen> {
           return ItemCardWidget(index: index);
         },
       ),
-      bottomNavigationBar: NavBarWidget(
+      // floatingActionButton: (_currentUser != null && _currentUser!.isShopOwner)
+      //     ? FloatingActionButton(
+      //         onPressed: _addProduct,
+      //         tooltip: "Add Product",
+      //         child: const Icon(Icons.add),
+      //       )
+      //     : null,
+      /* bottomNavigationBar: NavBarWidget(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
-      ),
-      floatingActionButton: (_currentUser != null && _currentUser!.isShopOwner)
-          ? FloatingActionButton(
-              onPressed: _addProduct,
-              tooltip: "Add Product",
-              child: const Icon(Icons.add),
-            )
-          : null,
+      ), */
     );
   }
 }

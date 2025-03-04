@@ -23,10 +23,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       appBar: AppBarWidget(title: "Search"),
       
-      bottomNavigationBar: NavBarWidget(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-      ),
+
     );
   }
 }

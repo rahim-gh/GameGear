@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:game_gear/screen/home/home_screen.dart';
+import 'package:game_gear/screen/main/main_screen.dart';
 import 'package:game_gear/shared/widget/input_widget.dart';
 import 'package:game_gear/shared/widget/button_widget.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
@@ -71,7 +72,9 @@ class _LoginScreenState extends State<LoginScreen> {
           level: Level.info);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-            builder: (context) => HomeScreen(uid: credential.user!.uid)),
+          // builder: (context) => HomeScreen(uid: credential.user!.uid)),
+          builder: (context) => MainScreen(uid: credential.user!.uid),
+        ),
       );
     } on FirebaseAuthException catch (e) {
       applog('Login failed: ${e.message}', level: Level.error);

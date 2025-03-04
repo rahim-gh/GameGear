@@ -98,10 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ]),
       )),
-      bottomNavigationBar: NavBarWidget(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-      ),
+
     );
   }
 }
