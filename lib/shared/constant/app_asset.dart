@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class AppAsset {
   static final String logo = 'assets/images/logo.png';
   static final List products = [
@@ -15,7 +17,18 @@ Ergonomic design with side grips for comfort.
 Compatible with PC, Mac, and gaming consoles.
 ''',
       'stock': 6,
-      'rating': 5
+      'rating': 5,
+      'colors': [
+        Colors.black,
+        Colors.white,
+        Colors.green,
+        Colors.red,
+        Colors.blue,
+        Colors.yellow,
+        Colors.purple,
+        Colors.orange,
+        Colors.pink,
+      ]
     },
     {
       'name': 'Ergonomic Black Gaming Mouse with RGB Lighting',
@@ -30,7 +43,18 @@ Adjustable DPI for precise gaming control.
 Customizable RGB lighting to match your gaming setup.
 Long battery life and responsive performance.''',
       'stock': 4,
-      'rating': 2
+      'rating': 2,
+      'colors': [
+        Colors.black,
+        Colors.white,
+        Colors.green,
+        Colors.red,
+        Colors.blue,
+        Colors.yellow,
+        Colors.purple,
+        Colors.orange,
+        Colors.pink,
+      ]
     },
     {
       'name': 'High-Performance RGB Gaming PC Tower',
@@ -45,7 +69,18 @@ Latest generation processor and powerful graphics card.
 Ample storage space with SSD and HDD options.
 Customizable RGB lighting for a personalized setup.''',
       'stock': 7,
-      'rating': 1
+      'rating': 1,
+      'colors': [
+        Colors.black,
+        Colors.white,
+        Colors.green,
+        Colors.red,
+        Colors.blue,
+        Colors.yellow,
+        Colors.purple,
+        Colors.orange,
+        Colors.pink,
+      ]
     },
     {
       'name': 'Mars Gaming RGB Wired Controller',
@@ -60,7 +95,18 @@ Responsive analog sticks and customizable buttons.
 Compatible with PC, PlayStation, and Android devices.
 Plug-and-play functionality.''',
       'stock': 5,
-      'rating': 0
+      'rating': 0,
+      'colors': [
+        Colors.black,
+        Colors.white,
+        Colors.green,
+        Colors.red,
+        Colors.blue,
+        Colors.yellow,
+        Colors.purple,
+        Colors.orange,
+        Colors.pink,
+      ]
     },
     {
       'name': 'Pink Gaming Headset with RGB Surround Sound',
@@ -75,7 +121,18 @@ Noise-canceling microphone for clear in-game communication.
 Comfortable over-ear design with soft cushioning.
 Compatible with PC, PlayStation, Xbox, and other platforms.''',
       'stock': 4,
-      'rating': 3
+      'rating': 3,
+      'colors': [
+        Colors.black,
+        Colors.white,
+        Colors.green,
+        Colors.red,
+        Colors.blue,
+        Colors.yellow,
+        Colors.purple,
+        Colors.orange,
+        Colors.pink,
+      ]
     },
   ];
 }

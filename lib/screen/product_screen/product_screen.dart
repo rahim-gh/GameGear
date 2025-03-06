@@ -11,6 +11,8 @@ class ProductScreen extends StatefulWidget {
 
 class _ProductScreenState extends State<ProductScreen> {
   int quantity = 1;
+  Color? selectedColor;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,9 +57,38 @@ class _ProductScreenState extends State<ProductScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          "⭐" * widget.product['rating'],
-                          style: TextStyle(fontSize: 20),
+                        SizedBox(
+                          width: 130,
+                          height: 40,
+                          child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: widget.product['colors'].length,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                       selectedColor =
+                                          widget.product['colors'][index];
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: selectedColor ==
+                                                  widget.product['colors']
+                                                      [index]
+                                              ? AppColor.accent
+                                              : AppColor.greyShade,
+                                          width: 2),
+                                      shape: BoxShape.circle,
+                                      color: widget.product['colors'][index],
+                                    ),
+                                  ),
+                                );
+                              }),
                         ),
                         Row(
                           children: [
@@ -123,7 +154,7 @@ class _ProductScreenState extends State<ProductScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '\$${widget.product['price']}',
+                              '\$${widget.product['price'] * quantity}',
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
