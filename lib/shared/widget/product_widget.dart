@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
 
-class ItemCardWidget extends StatelessWidget {
+class ProductWidget extends StatelessWidget {
   final int index;
-  const ItemCardWidget({
+  const ProductWidget({
     super.key,
     required this.index,
   });
@@ -33,6 +33,7 @@ class ItemCardWidget extends StatelessWidget {
               Text(
                 AppAsset.elements[index]['name'],
                 style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
                   color: AppColor.accent,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

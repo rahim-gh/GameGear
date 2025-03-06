@@ -4,7 +4,7 @@ import 'package:game_gear/shared/constant/app_color.dart';
 import 'package:game_gear/shared/service/auth_service.dart';
 import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/widget/appbar_widget.dart';
-import 'package:game_gear/shared/widget/itemcard_widget.dart';
+import 'package:game_gear/shared/widget/product_widget.dart';
 import 'package:game_gear/shared/model/user_model.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:logger/logger.dart';
@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView.builder(
         itemCount: AppAsset.elements.length,
         itemBuilder: (context, index) {
-          return ItemCardWidget(index: index);
+          return ProductWidget(index: index);
         },
       ),
      
