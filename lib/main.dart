@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       // Example: Directing to LoginScreen then navigating to MainScreen upon success.
-      home: const MainScreen(uid: '0'),
+      home: const LoginScreen(),
       routes: {
         'signup_screen': (context) => const SignupScreen(),
         'login_screen': (context) => const LoginScreen(),

@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColor.secondary,
       appBar: AppBarWidget(title: 'Home'),
       body: ListView.builder(
-        itemCount: AppAsset.elements.length,
+        itemCount: AppAsset.products.length,
         itemBuilder: (context, index) {
           return ProductWidget(index: index);
         },
