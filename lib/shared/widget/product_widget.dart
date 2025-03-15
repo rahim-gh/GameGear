@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:game_gear/screen/product_screen/product_screen.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
 
-class ItemCardWidget extends StatelessWidget {
+class ProductWidget extends StatelessWidget {
   final int index;
-  const ItemCardWidget({
+  const ProductWidget({
     super.key,
     required this.index,
   });
@@ -14,9 +15,9 @@ class ItemCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (kDebugMode) {
-          print("${AppAsset.elements[index]["name"]} is clicked");
-        }
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return ProductScreen(product: AppAsset.products[index]);
+        }));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -31,8 +32,9 @@ class ItemCardWidget extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                AppAsset.elements[index]['name'],
+                AppAsset.products[index]['name'],
                 style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
                   color: AppColor.accent,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -42,16 +44,19 @@ class ItemCardWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ClipRRect(
-                      child: Image(
-                          width: 120,
-                          fit: BoxFit.fill,
-                          image: AssetImage(
-                              AppAsset.elements[index]['imageUrl']))),
+                  Hero(
+                    tag: AppAsset.products[index]['imageUrl'],
+                    child: ClipRRect(
+                        child: Image(
+                            width: 120,
+                            fit: BoxFit.fill,
+                            image: AssetImage(
+                                AppAsset.products[index]['imageUrl']))),
+                  ),
                   Column(
                     children: [
                       Text(
-                        "${AppAsset.elements[index]['price']}\$",
+                        "${AppAsset.products[index]['price']}\$",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -66,7 +71,8 @@ class ItemCardWidget extends StatelessWidget {
                         ),
                         onPressed: () {
                           if (kDebugMode) {
-                            print("${AppAsset.elements[index]["name"]} is added to basket");
+                            print(
+                                "${AppAsset.products[index]["name"]} is added to basket");
                           }
                         },
                         child: Text("Add to Basket"),
