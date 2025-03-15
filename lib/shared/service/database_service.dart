@@ -33,18 +33,18 @@ class DatabaseService {
   /// Adds a new user document using the provided Firebase Auth UID.
   Future<String?> addUser(
     String uid,
-    String fullname,
+    String fullName,
     String email,
     String password, {
     bool isShopOwner = false,
+    String? imageBase64,
   }) async {
     try {
       await initialize();
-      fullname = fullname.toLowerCase().trim();
+      fullName = fullName.toLowerCase().trim();
       email = email.toLowerCase().trim();
       password = password.trim();
 
-      // Check if the user document already exists.
       final DocumentSnapshot doc =
           await _firestore.collection('users').doc(uid).get();
       if (doc.exists) {
@@ -54,10 +54,11 @@ class DatabaseService {
 
       final User user = User(
         uid: uid,
-        fullname: fullname,
+        fullName: fullName,
         email: email,
         password: password,
         isShopOwner: isShopOwner,
+        imageBase64: imageBase64,
       );
 
       await _firestore.collection('users').doc(uid).set(user.toMap());
@@ -91,21 +92,23 @@ class DatabaseService {
   /// Updates an existing user's document.
   Future<void> updateUser(
     String uid,
-    String fullname,
+    String fullName,
     String email,
     String password,
+    String imageBase64,
   ) async {
     try {
       await initialize();
-      fullname = fullname.toLowerCase().trim();
+      fullName = fullName.toLowerCase().trim();
       email = email.toLowerCase().trim();
       password = password.trim();
 
       final User user = User(
         uid: uid,
-        fullname: fullname,
+        fullName: fullName,
         email: email,
         password: password,
+        imageBase64: imageBase64,
       );
 
       await _firestore.collection('users').doc(uid).update(user.toMap());
@@ -145,11 +148,12 @@ class DatabaseService {
     }
   }
 
-  /// Adds a product for a shop owner in their 'products' subcollection.
+  /// Adds a product for a shop owner in their 'products' collection.
   Future<int> addProductForShopOwner(
     String shopOwnerUid,
-    Product product,
-  ) async {
+    Product product, {
+    String? imageBase64,
+  }) async {
     try {
       await initialize();
       final CollectionReference productCol = _firestore
@@ -161,12 +165,14 @@ class DatabaseService {
       final QuerySnapshot prodSnapshot = await productCol.get();
       final int newProductId = prodSnapshot.docs.length;
 
+      // Merge the new image URL if provided.
       final Product newProduct = Product(
         id: newProductId,
         name: product.name,
         description: product.description,
         price: product.price,
         tags: product.tags,
+        imageBase64: imageBase64,
       );
 
       await productCol.doc(newProductId.toString()).set(newProduct.toMap());

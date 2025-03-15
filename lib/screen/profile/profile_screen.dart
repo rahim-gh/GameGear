@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/screen/profile/screens/profile_info/profile_info.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
+import 'package:game_gear/shared/model/user_model.dart';
 import 'package:game_gear/shared/service/auth_service.dart';
+import 'package:game_gear/shared/service/database_service.dart';
 import 'package:game_gear/shared/widget/appbar_widget.dart';
-import 'package:game_gear/shared/widget/settingchoice_widget.dart';
+import 'package:game_gear/shared/widget/setting_choice_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({
@@ -15,8 +18,21 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  late final User? _user;
+  bool _loading = true;
+
+  @override
+  void initState() async {
+    super.initState();
+    _user = await DatabaseService().getUser(AuthService().currentUser!.uid);
+    _loading = false;
+  }
+
   @override
   Widget build(BuildContext context) {
+    while (_loading) {
+      continue;
+    }
     return Scaffold(
       appBar: AppBarWidget(title: "Profile"),
       body: SingleChildScrollView(
@@ -39,12 +55,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Full Name',
+                      _user?.fullName ?? 'Unknown',
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      'contact.gamegear@gmail.com',
+                      _user?.email ?? 'Unknown',
                       style: TextStyle(
                           fontSize: 15,
                           color: AppColor.greyShade,
@@ -61,7 +77,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               SettingChoiceWidget(
                 leading: Icons.person_outline,
                 title: 'Personal Info',
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) =>
+                          const ProfileInfoScreen(),
+                    ),
+                  );
+                },
               ),
               SettingChoiceWidget(
                 leading: Icons.payment,
