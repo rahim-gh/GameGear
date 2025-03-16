@@ -1,10 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:game_gear/firebase_options.dart';
 import 'package:game_gear/screen/authentication/login_screen.dart';
 import 'package:game_gear/screen/authentication/signup_screen.dart';
 import 'package:game_gear/screen/basket/basket_screen.dart';
 import 'package:game_gear/screen/main/main_screen.dart';
-import 'package:game_gear/firebase_options.dart';
 import 'package:game_gear/screen/profile/profile_screen.dart';
 import 'package:game_gear/screen/search/search_screen.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
@@ -13,12 +13,12 @@ import 'package:logger/logger.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  applog('Initialize the Firebase', level: Level.info);
+  logs('Initialize the Firebase', level: Level.info);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  applog('App starting...', level: Level.info);
+  logs('App starting...', level: Level.info);
   runApp(const MyApp());
 }
 

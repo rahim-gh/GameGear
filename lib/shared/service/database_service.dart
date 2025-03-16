@@ -22,99 +22,85 @@ class DatabaseService {
   /// Verifies that Firestore is initialized.
   Future<void> initialize() async {
     try {
-      // Firebase.initializeApp() should be called elsewhere in your app.
-      applog('Firestore initialization verified.', level: Level.info);
+      // Firebase.initializeApp() should be called elsewhere.
+      logs('Firestore initialization verified.', level: Level.info);
     } catch (e) {
-      applog('Firestore initialization error: $e', level: Level.error);
+      logs('Firestore initialization error: $e', level: Level.error);
       throw DatabaseException('Firestore initialization error: $e');
     }
   }
 
-  /// Adds a new user document using the provided Firebase Auth UID.
+  /// Adds a new user document (only non-sensitive info) using the provided uid.
   Future<String?> addUser(
     String uid,
-    String fullName,
-    String email,
-    String password, {
+    String fullName, {
     bool isShopOwner = false,
     String? imageBase64,
   }) async {
     try {
       await initialize();
       fullName = fullName.toLowerCase().trim();
-      email = email.toLowerCase().trim();
-      password = password.trim();
 
       final DocumentSnapshot doc =
           await _firestore.collection('users').doc(uid).get();
       if (doc.exists) {
-        applog('User with uid $uid already exists.', level: Level.warning);
+        logs('User with uid $uid already exists.', level: Level.warning);
         return null;
       }
 
       final User user = User(
-        uid: uid,
         fullName: fullName,
-        email: email,
-        password: password,
         isShopOwner: isShopOwner,
         imageBase64: imageBase64,
       );
 
       await _firestore.collection('users').doc(uid).set(user.toMap());
-      applog('User with uid $uid added successfully.', level: Level.info);
+      logs('User with uid $uid added successfully.', level: Level.info);
       return uid;
     } catch (e) {
-      applog('Error adding user with uid $uid: $e', level: Level.error);
+      logs('Error adding user with uid $uid: $e', level: Level.error);
       throw DatabaseException('Error adding user: $e');
     }
   }
 
-  /// Retrieves a user by their UID.
+  /// Retrieves a user by their uid.
   Future<User?> getUser(String uid) async {
     try {
       await initialize();
       final DocumentSnapshot doc =
           await _firestore.collection('users').doc(uid).get();
       if (doc.exists) {
-        applog('User with uid $uid retrieved successfully.', level: Level.info);
+        logs('User with uid $uid retrieved successfully.', level: Level.info);
         return User.fromMap(doc.data() as Map<String, dynamic>);
       } else {
-        applog('User with uid $uid not found.', level: Level.warning);
+        logs('User with uid $uid not found.', level: Level.warning);
         return null;
       }
     } catch (e) {
-      applog('Error retrieving user with uid $uid: $e', level: Level.error);
+      logs('Error retrieving user with uid $uid: $e', level: Level.error);
       throw DatabaseException('Error retrieving user: $e');
     }
   }
 
-  /// Updates an existing user's document.
+  /// Updates an existing user's document with non-sensitive info.
   Future<void> updateUser(
     String uid,
     String fullName,
-    String email,
-    String password,
-    String imageBase64,
+    String? imageBase64,
   ) async {
     try {
       await initialize();
       fullName = fullName.toLowerCase().trim();
-      email = email.toLowerCase().trim();
-      password = password.trim();
 
       final User user = User(
-        uid: uid,
         fullName: fullName,
-        email: email,
-        password: password,
         imageBase64: imageBase64,
       );
 
       await _firestore.collection('users').doc(uid).update(user.toMap());
-      applog('User with uid $uid updated successfully.', level: Level.info);
+      logs('User info updated successfully for uid $uid.', level: Level.info);
     } catch (e) {
-      applog('Error updating user with uid $uid: $e', level: Level.error);
+      logs('Error updating user with uid $uid: $e', level: Level.error);
       throw DatabaseException('Error updating user: $e');
     }
   }
@@ -124,9 +110,9 @@ class DatabaseService {
     try {
       await initialize();
       await _firestore.collection('users').doc(uid).delete();
-      applog('User with uid $uid deleted successfully.', level: Level.info);
+      logs('User with uid $uid deleted successfully.', level: Level.info);
     } catch (e) {
-      applog('Error deleting user with uid $uid: $e', level: Level.error);
+      logs('Error deleting user with uid $uid: $e', level: Level.error);
       throw DatabaseException('Error deleting user: $e');
     }
   }
@@ -140,10 +126,10 @@ class DatabaseService {
       final List<User> users = querySnapshot.docs
           .map((doc) => User.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
-      applog('Retrieved ${users.length} users.', level: Level.info);
+      logs('Retrieved ${users.length} users.', level: Level.info);
       return users;
     } catch (e) {
-      applog('Error retrieving all users: $e', level: Level.error);
+      logs('Error retrieving all users: $e', level: Level.error);
       throw DatabaseException('Error retrieving all users: $e');
     }
   }
@@ -176,12 +162,12 @@ class DatabaseService {
       );
 
       await productCol.doc(newProductId.toString()).set(newProduct.toMap());
-      applog(
+      logs(
           'Product added for shop owner $shopOwnerUid with product id $newProductId.',
           level: Level.info);
       return newProductId;
     } catch (e) {
-      applog('Error adding product for shop owner $shopOwnerUid: $e',
+      logs('Error adding product for shop owner $shopOwnerUid: $e',
           level: Level.error);
       throw DatabaseException('Error adding product: $e');
     }
@@ -200,12 +186,12 @@ class DatabaseService {
       final List<Product> products = querySnapshot.docs
           .map((doc) => Product.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
-      applog(
+      logs(
           'Retrieved ${products.length} products for shop owner $shopOwnerUid.',
           level: Level.info);
       return products;
     } catch (e) {
-      applog('Error retrieving products for shop owner $shopOwnerUid: $e',
+      logs('Error retrieving products for shop owner $shopOwnerUid: $e',
           level: Level.error);
       throw DatabaseException('Error retrieving products: $e');
     }

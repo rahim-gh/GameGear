@@ -22,7 +22,7 @@ class Product {
       description: data['description'],
       price: (data['price'] as num).toDouble(),
       tags: List<String>.from(data['tags'] ?? []),
-      imageBase64: data['imageBase64'],
+      imageBase64: data['imageBase64'] ?? 'Unknown',
     );
   }
 

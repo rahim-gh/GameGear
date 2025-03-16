@@ -1,13 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/model/user_model.dart';
 import 'package:game_gear/shared/service/auth_service.dart';
 import 'package:game_gear/shared/service/database_service.dart';
+import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:game_gear/shared/widget/appbar_widget.dart';
+import 'package:game_gear/shared/widget/button_widget.dart';
+import 'package:game_gear/shared/widget/input_widget.dart';
+import 'package:game_gear/shared/widget/snackbar_widget.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
 
 class ProfileInfoScreen extends StatefulWidget {
   const ProfileInfoScreen({super.key});
@@ -24,9 +29,11 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
   // Controllers for user info
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _currentPasswordController =
+      TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
 
-  // New field to hold the updated profile image in base64
+  // Holds the updated profile image as a base64 string.
   String? _profileImageBase64;
 
   @override
@@ -36,13 +43,11 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
   }
 
   Future<void> _loadUserData() async {
-    // Retrieve the current user data
     final user =
         await DatabaseService().getUser(AuthService().currentUser!.uid);
     if (user != null) {
       _fullNameController.text = user.fullName;
-      _emailController.text = user.email;
-      _passwordController.text = user.password;
+      _emailController.text = AuthService().currentUser?.email ?? '';
     }
     setState(() {
       _user = user;
@@ -50,7 +55,6 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
     });
   }
 
-  // Function to pick an image from the gallery and convert it to base64
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? imageFile =
@@ -66,25 +70,142 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
   }
 
   Future<void> _saveProfile() async {
+    logs('Saving profile data...', level: Level.debug);
+
     if (_formKey.currentState!.validate()) {
       try {
-        // Pass the new image base64 if available, otherwise keep the existing one
+        await AuthService().reauthenticateUser(_currentPasswordController.text);
+
+        final currentUser = AuthService().currentUser;
+        if (currentUser != null) {
+          logs('Current auth email: ${currentUser.email}', level: Level.debug);
+
+          if (currentUser.email != _emailController.text) {
+            logs(
+              'Updating auth email from ${currentUser.email} to ${_emailController.text}',
+              level: Level.info,
+            );
+            await currentUser.verifyBeforeUpdateEmail(_emailController.text);
+            logs('Verification email sent. Waiting for confirmation...',
+                level: Level.info);
+
+            const maxWaitTime = Duration(minutes: 5);
+            const pollInterval = Duration(seconds: 10);
+            final startTime = DateTime.now();
+            bool emailUpdated = false;
+
+            while (DateTime.now().difference(startTime) < maxWaitTime) {
+              await currentUser.reload();
+              final updatedUser = AuthService().currentUser;
+              if (updatedUser != null &&
+                  updatedUser.email == _emailController.text) {
+                emailUpdated = true;
+                break;
+              }
+              logs('Waiting for email confirmation...', level: Level.debug);
+              await Future.delayed(pollInterval);
+            }
+
+            if (emailUpdated) {
+              logs('Auth email confirmed and updated successfully',
+                  level: Level.info);
+              SnackbarWidget.show(
+                context: context,
+                message: "Email updated. Please sign in again.",
+              );
+              await AuthService().signOut(context);
+              return; // End further processing as user is signed out.
+            } else {
+              logs(
+                'Email verification timed out. Please verify your new email and try again.',
+                level: Level.warning,
+              );
+              if (!mounted) return;
+              SnackbarWidget.show(
+                context: context,
+                message:
+                    "Email verification timed out. Please verify your new email and try again.",
+              );
+              return;
+            }
+          }
+
+          if (_newPasswordController.text.isNotEmpty) {
+            logs('Updating auth password...', level: Level.info);
+            await currentUser.updatePassword(_newPasswordController.text);
+            logs('Auth password updated successfully', level: Level.info);
+          }
+        } else {
+          logs('No authenticated user found', level: Level.error);
+        }
+
+        final imageToSave = _profileImageBase64 ?? _user?.imageBase64;
+
+        logs('Updating Firestore for user info...', level: Level.debug);
+        final uid = currentUser!.uid;
         await DatabaseService().updateUser(
-          _user!.uid,
+          uid,
           _fullNameController.text,
-          _emailController.text,
-          _passwordController.text,
-          _profileImageBase64 ?? _user!.imageBase64!,
+          imageToSave,
         );
+        logs('Firestore updated successfully for user info', level: Level.info);
+
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Profile updated successfully")),
+        SnackbarWidget.show(
+          context: context,
+          message: "Profile updated successfully",
         );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error updating profile: $e")),
+      } on FirebaseAuthException catch (e, stacktrace) {
+        // If the token is expired, force sign-out.
+        if (e.code == 'user-token-expired') {
+          logs('User token expired. Forcing sign out.', level: Level.error);
+          await AuthService().signOut(context);
+          if (!mounted) return;
+          SnackbarWidget.show(
+            context: context,
+            message: "Session expired. Please sign in again.",
+          );
+        } else {
+          logs('Error updating profile: $e',
+              level: Level.error, error: e, stackTrace: stacktrace);
+          if (!mounted) return;
+          SnackbarWidget.show(
+            context: context,
+            message: "Error updating profile: $e",
+          );
+        }
+      } catch (e, stacktrace) {
+        logs('Error updating profile: $e',
+            level: Level.error, error: e, stackTrace: stacktrace);
+        if (!mounted) return;
+        SnackbarWidget.show(
+          context: context,
+          message: "Error updating profile: $e",
         );
       }
+    } else {
+      logs('Profile form validation failed', level: Level.warning);
+    }
+  }
+
+  Widget _buildProfileImage() {
+    if (_profileImageBase64 != null && _profileImageBase64!.isNotEmpty) {
+      return CircleAvatar(
+        radius: 50,
+        backgroundImage: MemoryImage(base64Decode(_profileImageBase64!)),
+      );
+    } else if (_user?.imageBase64 != null && _user!.imageBase64!.isNotEmpty) {
+      return CircleAvatar(
+        radius: 50,
+        backgroundImage: MemoryImage(base64Decode(_user!.imageBase64!)),
+      );
+    } else {
+      final fallbackUrl =
+          'https://ui-avatars.com/api/?name=${Uri.encodeComponent(_user?.fullName ?? "Unknown")}&format=png';
+      return CircleAvatar(
+        radius: 50,
+        backgroundImage: NetworkImage(fallbackUrl),
+      );
     }
   }
 
@@ -92,31 +213,9 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
   void dispose() {
     _fullNameController.dispose();
     _emailController.dispose();
-    _passwordController.dispose();
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
     super.dispose();
-  }
-
-  // Helper to build the profile image widget
-  Widget _buildProfileImage() {
-    if (_profileImageBase64 != null) {
-      // Use the newly picked image
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: MemoryImage(base64Decode(_profileImageBase64!)),
-      );
-    } else if (_user?.imageBase64 != null) {
-      // Use the existing image from Firestore
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: MemoryImage(base64Decode(_user!.imageBase64!)),
-      );
-    } else {
-      // Fallback to the default asset image
-      return CircleAvatar(
-        radius: 50,
-        backgroundImage: AssetImage(AppAsset.logo),
-      );
-    }
   }
 
   @override
@@ -132,7 +231,6 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Profile Picture with onTap to change image
                     Center(
                       child: InkWell(
                         onTap: _pickImage,
@@ -140,46 +238,34 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Full Name Field
-                    TextFormField(
+                    InputFieldWidget(
+                      label: 'Full Name',
                       controller: _fullNameController,
-                      decoration: const InputDecoration(
-                        labelText: "Full Name",
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) => (value == null || value.isEmpty)
-                          ? "Please enter your full name"
-                          : null,
+                      type: 'name',
                     ),
                     const SizedBox(height: 16),
-                    // Email Field
-                    TextFormField(
+                    InputFieldWidget(
+                      label: 'Email',
                       controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: "Email",
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) => (value == null || value.isEmpty)
-                          ? "Please enter your email"
-                          : null,
+                      type: 'email',
                     ),
                     const SizedBox(height: 16),
-                    // Password Field
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: const InputDecoration(
-                        labelText: "Password",
-                        border: OutlineInputBorder(),
-                      ),
-                      obscureText: true,
-                      validator: (value) => (value == null || value.isEmpty)
-                          ? "Please enter your password"
-                          : null,
+                    InputFieldWidget(
+                      label: 'Current Password',
+                      controller: _currentPasswordController,
+                      type: 'password',
+                    ),
+                    const SizedBox(height: 16),
+                    InputFieldWidget(
+                      label: 'New Password (optional)',
+                      controller: _newPasswordController,
+                      type: 'password',
+                      requiredField: false,
                     ),
                     const SizedBox(height: 20),
-                    ElevatedButton(
+                    ButtonWidget(
+                      label: 'Save Profile',
                       onPressed: _saveProfile,
-                      child: const Text("Save Profile"),
                     ),
                   ],
                 ),

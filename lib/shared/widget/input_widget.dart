@@ -10,6 +10,7 @@ class InputFieldWidget extends StatefulWidget {
   final bool obscure;
   final TextInputType keyboardType;
   final TextInputAction textInputAction;
+  final bool requiredField;
 
   const InputFieldWidget({
     super.key,
@@ -19,6 +20,7 @@ class InputFieldWidget extends StatefulWidget {
     this.obscure = false,
     this.keyboardType = TextInputType.text,
     this.textInputAction = TextInputAction.next,
+    this.requiredField = true,
   });
 
   @override
@@ -37,6 +39,11 @@ class _InputFieldWidgetState extends State<InputFieldWidget> {
   String? _validator(String? value) {
     final input = value?.trim() ?? '';
 
+    // If the field is optional and empty, do not validate.
+    if (!widget.requiredField && input.isEmpty) {
+      return null;
+    }
+
     if (widget.type.toLowerCase() == 'email') {
       final regex = RegExp(r'^[A-Za-z0-9._-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
       if (input.isEmpty) {
@@ -45,10 +52,7 @@ class _InputFieldWidgetState extends State<InputFieldWidget> {
         return 'Invalid email format';
       }
     } else if (widget.type.toLowerCase() == 'password') {
-      final regex =
-          // RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$');
-          RegExp(
-              r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$'); // simplified version
+      final regex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$');
       if (input.isEmpty) {
         return 'Password field cannot be empty';
       } else if (!regex.hasMatch(input)) {
@@ -62,10 +66,9 @@ class _InputFieldWidgetState extends State<InputFieldWidget> {
         return 'Name must only contain letters and spaces (2-50 characters)';
       }
     } else if (widget.type.toLowerCase() == 'normal') {
-      // No validation rules for a normal text field.
       return null;
     } else {
-      applog('Unsupported field type: ${widget.type}', level: Level.error);
+      logs('Unsupported field type: ${widget.type}', level: Level.error);
       return 'Unsupported field type';
     }
     return null;
