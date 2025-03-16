@@ -1,13 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:game_gear/screen/home/home_screen.dart';
+import 'package:game_gear/screen/main/main_screen.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
+import 'package:game_gear/shared/service/auth_service.dart';
 import 'package:game_gear/shared/service/database_service.dart';
+import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:game_gear/shared/widget/button_widget.dart';
 import 'package:game_gear/shared/widget/input_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:game_gear/shared/service/auth_service.dart';
-import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:game_gear/shared/widget/snackbar_widget.dart';
 import 'package:logger/logger.dart';
 
@@ -44,7 +44,7 @@ class _SignupScreenState extends State<SignupScreen> {
     emailFocusNode = FocusNode();
     passwordFocusNode = FocusNode();
     confirmPasswordFocusNode = FocusNode();
-    applog('SignupScreen initialized', level: Level.info);
+    logs('SignupScreen initialized', level: Level.info);
   }
 
   @override
@@ -57,23 +57,23 @@ class _SignupScreenState extends State<SignupScreen> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
-    applog('SignupScreen disposed', level: Level.info);
+    logs('SignupScreen disposed', level: Level.info);
     super.dispose();
   }
 
   void navigateToLogin() {
-    applog('Navigating to Login Screen', level: Level.info);
+    logs('Navigating to Login Screen', level: Level.info);
     Navigator.of(context).pushReplacementNamed('login_screen');
   }
 
   Future<void> handleSignUp() async {
     if (!_formKey.currentState!.validate()) {
-      applog('Form validation failed', level: Level.warning);
+      logs('Form validation failed', level: Level.warning);
       return;
     }
     if (passwordController.text.trim() !=
         confirmPasswordController.text.trim()) {
-      applog('Password confirmation failed', level: Level.warning);
+      logs('Password confirmation failed', level: Level.warning);
       SnackbarWidget.show(context: context, message: 'Passwords do not match.');
       return;
     }
@@ -83,7 +83,7 @@ class _SignupScreenState extends State<SignupScreen> {
       final String password = passwordController.text.trim();
       final String fullname = fullNameController.text.trim();
 
-      applog('Attempting to sign up user via Firebase Auth', level: Level.info);
+      logs('Attempting to sign up user via Firebase Auth', level: Level.info);
       final UserCredential credential = await _authService.signUpWithEmail(
         email: email,
         password: password,
@@ -92,22 +92,25 @@ class _SignupScreenState extends State<SignupScreen> {
       // Ensure the newly registered user is authenticated.
       final String uid = credential.user!.uid;
 
-      // Create the Firestore user document. The isShopOwner flag is passed
-      // so that later the product subcollection can be linked to this user's UID.
-      await _databaseService.addUser(uid, fullname, email, password,
-          isShopOwner: _isShopOwner);
+      // Create the Firestore user document.
+      // Do not store email, password, or uid in Firestore.
+      await _databaseService.addUser(
+        uid,
+        fullname,
+        isShopOwner: _isShopOwner,
+      );
 
       if (!mounted) return;
-      applog('User signed up successfully with uid: $uid', level: Level.info);
+      logs('User signed up successfully with uid: $uid', level: Level.info);
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => MainScreen(uid: uid)),
       );
     } on FirebaseAuthException catch (e) {
-      applog('Signup failed: ${e.message}', level: Level.error);
+      logs('Signup failed: ${e.message}', level: Level.error);
       SnackbarWidget.show(
           context: context, message: 'Signup failed: ${e.message}');
     } catch (e) {
-      applog('Unexpected error during signup: $e', level: Level.error);
+      logs('Unexpected error during signup: $e', level: Level.error);
       SnackbarWidget.show(context: context, message: 'Signup failed: $e');
     }
   }

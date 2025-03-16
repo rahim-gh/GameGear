@@ -1,40 +1,32 @@
 class User {
-  final String uid;
-  final String fullname;
-  final String email;
-  final String password;
+  final String fullName;
   final bool isShopOwner;
+  final String? imageBase64;
 
   User({
-    required this.uid,
-    required this.fullname,
-    required this.email,
-    required this.password,
+    required this.fullName,
     this.isShopOwner = false,
+    this.imageBase64,
   });
 
   factory User.fromMap(Map<String, dynamic> data) {
     return User(
-      uid: data['uid'],
-      fullname: data['fullname'],
-      email: data['email'],
-      password: data['password'],
+      fullName: data['fullName'] ?? 'Unknown',
       isShopOwner: data['isShopOwner'] ?? false,
+      imageBase64: data['imageBase64'],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'uid': uid,
-      'fullname': fullname,
-      'email': email,
-      'password': password,
+      'fullName': fullName,
       'isShopOwner': isShopOwner,
+      'imageBase64': imageBase64,
     };
   }
 
   @override
   String toString() {
-    return 'User{id: $uid, fullname: $fullname, email: $email, password: $password, isShopOwner: $isShopOwner}';
+    return 'User{fullName: $fullName, isShopOwner: $isShopOwner, imageBase64: $imageBase64}';
   }
 }

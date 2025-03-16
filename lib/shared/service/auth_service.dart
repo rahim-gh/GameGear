@@ -9,23 +9,37 @@ class AuthService {
 
   User? get currentUser {
     try {
-      // Attempt to retrieve the current user
+      logs('Fetching current user...', level: Level.debug);
       final user = _auth.currentUser;
       if (user != null) {
-        applog('Current user retrieved with UID: ${user.uid}',
-            level: Level.info);
+        logs('Current user retrieved with UID: ${user.uid}', level: Level.info);
       } else {
-        applog('No current user found', level: Level.info);
+        logs('No current user found', level: Level.info);
       }
       return user;
     } catch (e) {
-      applog('Error while retrieving current user: $e', level: Level.error);
-      return null; // Return null in case of error
+      logs('Error while retrieving current user: $e', level: Level.error);
+      return null;
+    }
+  }
+
+  /// Reauthenticates the current user using the provided current password.
+  Future<void> reauthenticateUser(String currentPassword) async {
+    final user = _auth.currentUser;
+    if (user != null && user.email != null) {
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+      logs('User reauthenticated successfully', level: Level.info);
+    } else {
+      logs('Reauthentication failed: No user or email found',
+          level: Level.error);
     }
   }
 
   /// Signs in the user using Firebase Auth with email and password.
-  /// Throws a FirebaseAuthException with a user-friendly message.
   Future<UserCredential> signInWithEmail({
     required String email,
     required String password,
@@ -35,22 +49,21 @@ class AuthService {
         email: email,
         password: password,
       );
-      applog('User signed in with UID: ${credential.user?.uid}',
+      logs('User signed in with UID: ${credential.user?.uid}',
           level: Level.info);
       return credential;
     } on FirebaseAuthException catch (e) {
       final friendlyError = _mapFirebaseError(e);
-      applog('FirebaseAuthException during signIn: ${e.code} - $friendlyError',
+      logs('FirebaseAuthException during signIn: ${e.code} - $friendlyError',
           level: Level.error);
       throw FirebaseAuthException(code: e.code, message: friendlyError);
     } catch (e) {
-      applog('Unexpected error during signIn: $e', level: Level.error);
+      logs('Unexpected error during signIn: $e', level: Level.error);
       rethrow;
     }
   }
 
   /// Creates a new user with Firebase Auth using email and password.
-  /// Throws a FirebaseAuthException with a user-friendly message.
   Future<UserCredential> signUpWithEmail({
     required String email,
     required String password,
@@ -61,44 +74,34 @@ class AuthService {
         email: email,
         password: password,
       );
-      applog('User signed up with UID: ${credential.user?.uid}',
+      logs('User signed up with UID: ${credential.user?.uid}',
           level: Level.info);
       return credential;
     } on FirebaseAuthException catch (e) {
       final friendlyError = _mapFirebaseError(e);
-      applog('FirebaseAuthException during signUp: ${e.code} - $friendlyError',
+      logs('FirebaseAuthException during signUp: ${e.code} - $friendlyError',
           level: Level.error);
       throw FirebaseAuthException(code: e.code, message: friendlyError);
     } catch (e) {
-      applog('Unexpected error during signUp: $e', level: Level.error);
+      logs('Unexpected error during signUp: $e', level: Level.error);
       rethrow;
     }
   }
 
-  /// Handles logging out the current user.
+  /// Signs out the current user.
   Future<void> signOut(BuildContext context) async {
     try {
       await _auth.signOut();
-      // Clear any user-specific data here if needed
-      // For example, you might want to clear user preferences or cached data
-
-      // Navigate to the login screen
-      // Assuming you have a navigation service or context available
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          // builder: (context) => HomeScreen(uid: credential.user!.uid)),
-          builder: (context) => LoginScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => LoginScreen()),
       );
-
-      applog('User successfully signed out', level: Level.info);
+      logs('User successfully signed out', level: Level.info);
     } catch (e) {
-      applog('Error during sign out: $e', level: Level.error);
+      logs('Error during sign out: $e', level: Level.error);
       rethrow;
     }
   }
 
-  /// Maps Firebase error codes to more user-friendly messages.
   String _mapFirebaseError(FirebaseAuthException e) {
     switch (e.code) {
       case 'invalid-email':
@@ -126,19 +129,16 @@ class AuthService {
     }
   }
 
-  /// Checks if the user is authenticated and handles the logic accordingly.
   Future<void> checkAuthenticationStatus() async {
     try {
       final user = _auth.currentUser;
       if (user == null) {
-        applog('User is not authenticated', level: Level.info);
-        // Optionally, redirect the user to the login screen.
+        logs('User is not authenticated', level: Level.info);
       } else {
-        applog('User is authenticated with UID: ${user.uid}',
-            level: Level.info);
+        logs('User is authenticated with UID: ${user.uid}', level: Level.info);
       }
     } catch (e) {
-      applog('Error during authentication check: $e', level: Level.error);
+      logs('Error during authentication check: $e', level: Level.error);
       rethrow;
     }
   }

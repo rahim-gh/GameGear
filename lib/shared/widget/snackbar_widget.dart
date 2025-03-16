@@ -33,9 +33,9 @@ class SnackbarWidget {
       // Clear existing snackbars to maintain a clean user interface.
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      applog('Snackbar displayed with message: $message', level: Level.info);
+      logs('Snackbar displayed with message: $message', level: Level.info);
     } catch (e) {
-      applog('Error showing snackbar: $e', level: Level.error);
+      logs('Error showing snackbar: $e', level: Level.error);
       rethrow;
     }
   }

@@ -1,12 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:game_gear/screen/main/main_screen.dart';
-import 'package:game_gear/shared/widget/input_widget.dart';
-import 'package:game_gear/shared/widget/button_widget.dart';
 import 'package:game_gear/shared/constant/app_asset.dart';
 import 'package:game_gear/shared/constant/app_color.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:game_gear/shared/service/auth_service.dart';
 import 'package:game_gear/shared/utils/logger_util.dart';
+import 'package:game_gear/shared/widget/button_widget.dart';
+import 'package:game_gear/shared/widget/input_widget.dart';
 import 'package:game_gear/shared/widget/snackbar_widget.dart';
 import 'package:logger/logger.dart';
 
@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     emailFocusNode = FocusNode();
     passwordFocusNode = FocusNode();
-    applog('LoginScreen initialized', level: Level.info);
+    logs('LoginScreen initialized', level: Level.info);
   }
 
   @override
@@ -40,18 +40,18 @@ class _LoginScreenState extends State<LoginScreen> {
     passwordFocusNode.dispose();
     emailController.dispose();
     passwordController.dispose();
-    applog('LoginScreen disposed', level: Level.info);
+    logs('LoginScreen disposed', level: Level.info);
     super.dispose();
   }
 
   void navigateToSignup() {
-    applog('Navigating to Signup Screen', level: Level.info);
+    logs('Navigating to Signup Screen', level: Level.info);
     Navigator.of(context).pushReplacementNamed('signup_screen');
   }
 
   Future<void> handleLogin() async {
     if (!_formKey.currentState!.validate()) {
-      applog('Form validation failed', level: Level.warning);
+      logs('Form validation failed', level: Level.warning);
       return;
     }
 
@@ -59,14 +59,14 @@ class _LoginScreenState extends State<LoginScreen> {
       final String email = emailController.text.toLowerCase().trim();
       final String password = passwordController.text.trim();
 
-      applog('Attempting to sign in user via Firebase Auth', level: Level.info);
+      logs('Attempting to sign in user via Firebase Auth', level: Level.info);
       final UserCredential credential = await _authService.signInWithEmail(
         email: email,
         password: password,
       );
 
       if (!mounted) return;
-      applog(
+      logs(
           'Login successful. Navigating to HomeScreen with uid: ${credential.user?.uid}',
           level: Level.info);
       Navigator.of(context).pushReplacement(
@@ -76,11 +76,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      applog('Login failed: ${e.message}', level: Level.error);
+      logs('Login failed: ${e.message}', level: Level.error);
       SnackbarWidget.show(
           context: context, message: 'Login failed: ${e.message}');
     } catch (e) {
-      applog('Unexpected error during login: $e', level: Level.error);
+      logs('Unexpected error during login: $e', level: Level.error);
       SnackbarWidget.show(context: context, message: 'Login failed: $e');
     }
   }
