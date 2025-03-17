@@ -1,18 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
-  final String id;
-  final String name;
-  final String description;
-  final double price;
-  final List<String> tags;
-  final List<String>? imagesBase64; // Multiple images support
-  final String ownerUid;
-  final DateTime createdAt;
-  final double rate;
+  late final String id;
+  late final String name;
+  late final String description;
+  late final double price;
+  late final List<String> tags;
+  late final List<String>? imagesBase64; // Multiple images support
+  late final String ownerUid;
+  late final DateTime createdAt;
+  late final double rate;
+  late final int quantity;
 
-  Product(
-    this.id, {
+  Product({
+    required this.id,
     required this.name,
     required this.description,
     required this.price,
@@ -21,11 +22,12 @@ class Product {
     required this.ownerUid,
     required this.createdAt,
     this.rate = 0.0,
+    required this.quantity,
   });
 
   factory Product.fromMap(Map<String, dynamic> data) {
     return Product(
-      data['id'],
+      id: data['id'],
       name: data['name'],
       description: data['description'],
       price: (data['price'] as num).toDouble(),
@@ -36,6 +38,7 @@ class Product {
       ownerUid: data['ownerUid'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
+      quantity: data['quantity'],
     );
   }
 
@@ -50,11 +53,12 @@ class Product {
       'ownerUid': ownerUid,
       'createdAt': Timestamp.fromDate(createdAt),
       'rate': rate,
+      'quantity': quantity,
     };
   }
 
   @override
   String toString() {
-    return 'Product{id: $id, name: $name, description: $description, price: $price, tags: $tags, imagesBase64: $imagesBase64, ownerUid: $ownerUid, createdAt: $createdAt, rate: $rate}';
+    return 'Product{id: $id, name: $name, description: $description, price: $price, tags: $tags, imagesBase64: $imagesBase64, ownerUid: $ownerUid, createdAt: $createdAt, rate: $rate, quantity: $quantity}';
   }
 }

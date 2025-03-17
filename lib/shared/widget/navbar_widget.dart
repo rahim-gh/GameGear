@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../constant/app_theme.dart';
+import '../model/user_model.dart';
 
 class NavBarWidget extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemTapped;
+  final User user;
 
   const NavBarWidget({
     super.key,
     required this.selectedIndex,
     required this.onItemTapped,
+    required this.user,
   });
 
   @override
@@ -31,23 +34,29 @@ class NavBarWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: BottomNavigationBar(
           elevation: 0,
-          items: const [
-            BottomNavigationBarItem(
+          items: [
+            const BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: 'Home',
               backgroundColor: AppTheme.accentColor,
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.search),
               label: 'Search',
               backgroundColor: AppTheme.accentColor,
             ),
-            BottomNavigationBarItem(
+            if (user.isShopOwner)
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.add),
+                label: 'Add',
+                backgroundColor: AppTheme.accentColor,
+              ),
+            const BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart),
               label: 'Basket',
               backgroundColor: AppTheme.accentColor,
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.person),
               label: 'Profile',
               backgroundColor: AppTheme.accentColor,

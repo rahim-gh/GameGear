@@ -8,6 +8,7 @@ import 'screen/authentication/login_screen.dart';
 import 'screen/authentication/signup_screen.dart';
 import 'screen/basket/basket_screen.dart';
 import 'screen/direction/direction_screen.dart';
+import 'screen/home/home_screen.dart';
 import 'screen/main/main_screen.dart';
 import 'screen/profile/profile_screen.dart';
 import 'screen/search/search_screen.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         'signup_screen': (context) => const SignupScreen(),
         'login_screen': (context) => const LoginScreen(),
         'main_screen': (context) => const MainScreen(uid: '0'),
+        'home_screen': (context) => const HomeScreen(),
         'search_screen': (context) => const SearchScreen(),
         'basket_screen': (context) => const BasketScreen(),
         'profile_screen': (context) => const ProfileScreen(),

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../shared/model/user_model.dart';
+import '../../shared/service/auth_service.dart';
+import '../../shared/service/database_service.dart';
 import '../../shared/widget/navbar_widget.dart';
 import '../basket/basket_screen.dart';
 import '../home/home_screen.dart';
+import '../product/screens/add_product_screen.dart';
 import '../profile/profile_screen.dart';
 import '../search/search_screen.dart';
 import 'logic/nav_bar_visibility_controller.dart';
@@ -19,13 +23,33 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  late User _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    // Fetch non-sensitive user data from Firestore.
+    final user =
+        await DatabaseService().getUser(AuthService().currentUser!.uid);
+
+    setState(() {
+      _user = user!;
+    });
+  }
+
   int _selectedIndex = 0;
-  final NavBarVisibilityController _navBarController = NavBarVisibilityController();
+  final NavBarVisibilityController _navBarController =
+      NavBarVisibilityController();
 
   // List of screens.
   List<Widget> get _widgetOptions => [
         const HomeScreen(),
         const SearchScreen(),
+        if (_user.isShopOwner) const AddProductScreen(),
         const BasketScreen(),
         const ProfileScreen(),
       ];
@@ -69,13 +93,16 @@ class _MainScreenState extends State<MainScreen> {
               return AnimatedSlide(
                 duration: const Duration(milliseconds: 100),
                 // Slide out of view when hidden.
-                offset: _navBarController.isVisible ? Offset.zero : const Offset(0, 1),
+                offset: _navBarController.isVisible
+                    ? Offset.zero
+                    : const Offset(0, 1),
                 child: child,
               );
             },
             child: NavBarWidget(
               selectedIndex: _selectedIndex,
               onItemTapped: _onItemTapped,
+              user: _user,
             ),
           ),
         ),
