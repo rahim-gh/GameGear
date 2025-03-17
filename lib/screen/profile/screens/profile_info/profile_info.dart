@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
+
 import '../../../../shared/model/user_model.dart';
 import '../../../../shared/service/auth_service.dart';
 import '../../../../shared/service/database_service.dart';
@@ -11,8 +14,6 @@ import '../../../../shared/widget/appbar_widget.dart';
 import '../../../../shared/widget/button_widget.dart';
 import '../../../../shared/widget/input_widget.dart';
 import '../../../../shared/widget/snackbar_widget.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:logger/logger.dart';
 
 class ProfileInfoScreen extends StatefulWidget {
   const ProfileInfoScreen({super.key});

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
+  final String id;
   final String name;
   final String description;
   final double price;
@@ -10,7 +11,8 @@ class Product {
   final DateTime createdAt;
   final double rate;
 
-  Product({
+  Product(
+    this.id, {
     required this.name,
     required this.description,
     required this.price,
@@ -23,6 +25,7 @@ class Product {
 
   factory Product.fromMap(Map<String, dynamic> data) {
     return Product(
+      data['id'],
       name: data['name'],
       description: data['description'],
       price: (data['price'] as num).toDouble(),
@@ -38,6 +41,7 @@ class Product {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'name': name,
       'description': description,
       'price': price,
@@ -51,6 +55,6 @@ class Product {
 
   @override
   String toString() {
-    return 'Product{name: $name, description: $description, price: $price, tags: $tags, imagesBase64: $imagesBase64, ownerUid: $ownerUid, createdAt: $createdAt, rate: $rate}';
+    return 'Product{id: $id, name: $name, description: $description, price: $price, tags: $tags, imagesBase64: $imagesBase64, ownerUid: $ownerUid, createdAt: $createdAt, rate: $rate}';
   }
 }

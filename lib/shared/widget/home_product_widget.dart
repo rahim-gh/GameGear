@@ -1,15 +1,18 @@
-import 'package:flutter/foundation.dart';
+// home_product_widget.dart
 import 'package:flutter/material.dart';
 
-import '../../screen/product_screen/product_screen.dart';
+import '../../screen/product/product_screen.dart';
 import '../constant/app_theme.dart';
-import '../constant/app_data.dart';
+import '../model/product_model.dart'; // Import the Product model
 
 class HomeProductWidget extends StatelessWidget {
-  final int index;
+  final Product product;
+  final VoidCallback addProduct;
+
   const HomeProductWidget({
     super.key,
-    required this.index,
+    required this.product,
+    required this.addProduct,
   });
 
   @override
@@ -17,7 +20,7 @@ class HomeProductWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProductScreen(product: AppData.products[index]);
+          return ProductScreen(product: product);
         }));
       },
       child: Container(
@@ -29,37 +32,41 @@ class HomeProductWidget extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                AppData.products[index]['name'],
+                product.name,
                 style: AppTheme.titleStyle,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Hero(
-                    tag: AppData.products[index]['imageUrl'],
+                    tag: product.name, // Use product name as a unique tag
                     child: ClipRRect(
-                        child: Image(
-                            width: 120,
-                            fit: BoxFit.fill,
-                            image: AssetImage(
-                                AppData.products[index]['imageUrl']))),
+                      child: Image(
+                        width: 120,
+                        fit: BoxFit.fill,
+                        image: AssetImage(product.imagesBase64?.first ??
+                            'assets/images/default_image.png'), // Use the first image or a default image
+                      ),
+                    ),
                   ),
                   Column(
                     children: [
                       Text(
-                        "${AppData.products[index]['price']}\$",
+                        "\$${product.price.toString()}",
                         style: AppTheme.titleStyle,
                       ),
                       ElevatedButton(
                         style: AppTheme.buttonStyle,
                         onPressed: () {
-                          if (kDebugMode) {
-                            print(
-                                "${AppData.products[index]["name"]} is added to basket");
-                          }
+                          addProduct(); // Call the addProduct callback
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('${product.name} added to basket'),
+                            ),
+                          );
                         },
-                        child: Text("Add to Basket"),
+                        child: const Text("Add to Basket"),
                       ),
                     ],
                   )

@@ -1,15 +1,20 @@
-import 'package:flutter/foundation.dart';
+// basket_product_widget.dart
 import 'package:flutter/material.dart';
 
-import '../../screen/product_screen/product_screen.dart';
+import '../../screen/product/product_screen.dart';
 import '../constant/app_theme.dart';
-import '../constant/app_data.dart';
+import '../model/product_model.dart';
 
 class BasketProductWidget extends StatelessWidget {
-  final int index;
+  final Product product;
+  final int quantity;
+  final VoidCallback onRemove;
+
   const BasketProductWidget({
     super.key,
-    required this.index,
+    required this.product,
+    required this.quantity,
+    required this.onRemove,
   });
 
   @override
@@ -17,39 +22,54 @@ class BasketProductWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProductScreen(product: AppData.products[index]);
+          return ProductScreen(product: product);
         }));
       },
       child: Container(
         decoration: AppTheme.cardDecoration,
         margin: const EdgeInsets.all(10),
+        width: MediaQuery.of(context).size.width,
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              Text(AppData.products[index]['name'], style: AppTheme.titleStyle),
-              SizedBox(height: 10),
+              Text(
+                product.name,
+                style: AppTheme.titleStyle,
+              ),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Hero(
-                    tag: AppData.products[index]['imageUrl'],
+                    tag: product.name,
                     child: ClipRRect(
-                        child: Image(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image(
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.cover,
+                        image: AssetImage(product.imagesBase64?.first ??
+                            'assets/images/default_image.png'),
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/images/default_image.png',
                             width: 120,
-                            fit: BoxFit.fill,
-                            image: AssetImage(
-                                AppData.products[index]['imageUrl']))),
+                            height: 120,
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      ),
+                    ),
                   ),
                   Column(
-                    spacing: 5,
                     children: [
                       Text(
-                        "${AppData.products[index]['price']}\$",
+                        "\$${(product.price * quantity).toStringAsFixed(2)}",
                         style: AppTheme.titleStyle,
                       ),
                       Text(
-                        "Quantity: 1",
+                        "Quantity: $quantity",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -57,13 +77,8 @@ class BasketProductWidget extends StatelessWidget {
                       ),
                       ElevatedButton(
                         style: AppTheme.buttonStyle,
-                        onPressed: () {
-                          if (kDebugMode) {
-                            print(
-                                "${AppData.products[index]["name"]} is added to basket");
-                          }
-                        },
-                        child: Text("Remove"),
+                        onPressed: onRemove,
+                        child: const Text("Remove"),
                       ),
                     ],
                   )

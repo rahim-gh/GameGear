@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'logger_util.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
+
+import 'logger_util.dart';
 
 class ImageBase64 {
   /// Converts an image file to a base64 string.

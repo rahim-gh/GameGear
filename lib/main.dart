@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'screen/authentication/login_screen.dart';
@@ -10,6 +11,7 @@ import 'screen/direction/direction_screen.dart';
 import 'screen/main/main_screen.dart';
 import 'screen/profile/profile_screen.dart';
 import 'screen/search/search_screen.dart';
+import 'shared/model/basket_model.dart';
 import 'shared/utils/logger_util.dart';
 
 void main() async {
@@ -21,7 +23,13 @@ void main() async {
   );
 
   logs('App starting...', level: Level.info);
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      // Wrap the app with ChangeNotifierProvider
+      create: (context) => BasketModel(), // Provide the BasketModel
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
