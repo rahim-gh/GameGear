@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:game_gear/screen/product_screen/product_screen.dart';
-import 'package:game_gear/shared/constant/app_asset.dart';
-import 'package:game_gear/shared/constant/app_color.dart';
+
+import '../../screen/product_screen/product_screen.dart';
+import '../constant/app_asset.dart';
+import '../constant/app_color.dart';
 
 class ProductWidget extends StatelessWidget {
   final int index;

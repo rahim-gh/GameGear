@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/widget/appbar_widget.dart';
+
+import '../../shared/widget/appbar_widget.dart';
 
 class BasketScreen extends StatefulWidget {
   const BasketScreen({

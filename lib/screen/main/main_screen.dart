@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/screen/home/home_screen.dart';
+import '../home/home_screen.dart';
 import 'package:game_gear/screen/main/logic/nav_bar_visibility_controller.dart';
 import 'package:game_gear/screen/search/search_screen.dart';
 import 'package:game_gear/screen/basket/basket_screen.dart';

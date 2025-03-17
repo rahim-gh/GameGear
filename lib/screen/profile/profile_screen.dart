@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/screen/profile/screens/profile_info/profile_info.dart';
-import 'package:game_gear/shared/constant/app_color.dart';
-import 'package:game_gear/shared/model/user_model.dart';
-import 'package:game_gear/shared/service/auth_service.dart';
-import 'package:game_gear/shared/service/database_service.dart';
-import 'package:game_gear/shared/utils/image_base64.dart';
-import 'package:game_gear/shared/widget/appbar_widget.dart';
-import 'package:game_gear/shared/widget/setting_choice_widget.dart';
+
+import '../../shared/constant/app_color.dart';
+import '../../shared/model/user_model.dart';
+import '../../shared/service/auth_service.dart';
+import '../../shared/service/database_service.dart';
+import '../../shared/utils/image_base64.dart';
+import '../../shared/widget/appbar_widget.dart';
+import '../../shared/widget/setting_choice_widget.dart';
+import 'screens/profile_info/profile_info.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/constant/app_color.dart';
+
+import '../constant/app_color.dart';
 
 class NavBarWidget extends StatelessWidget {
   final int selectedIndex;

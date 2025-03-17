@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/constant/app_color.dart';
+import '../../shared/constant/app_color.dart';
 
 class ProductScreen extends StatefulWidget {
   final product;

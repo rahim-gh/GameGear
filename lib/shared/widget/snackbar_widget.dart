@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/constant/app_color.dart';
-import 'package:game_gear/shared/utils/logger_util.dart';
+import '../constant/app_color.dart';
+import '../utils/logger_util.dart';
 import 'package:logger/logger.dart';
 
 class SnackbarWidget {

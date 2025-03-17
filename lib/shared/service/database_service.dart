@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:game_gear/shared/model/product_model.dart';
-import 'package:game_gear/shared/model/user_model.dart';
-import 'package:game_gear/shared/service/auth_service.dart';
-import 'package:game_gear/shared/utils/logger_util.dart';
+import '../model/product_model.dart';
+import '../model/user_model.dart';
+import 'auth_service.dart';
+import '../utils/logger_util.dart';
 import 'package:logger/logger.dart';
 
 /// Custom exception for database-related errors.

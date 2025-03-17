@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/constant/app_color.dart';
-import 'package:game_gear/shared/widget/snackbar_widget.dart';
+import '../constant/app_color.dart';
+import 'snackbar_widget.dart';
 
 class ButtonWidget extends StatefulWidget {
   final String label;
