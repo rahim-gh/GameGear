@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../constant/app_color.dart';
-import '../utils/logger_util.dart';
 import 'package:logger/logger.dart';
+
+import '../constant/app_theme.dart';
+import '../utils/logger_util.dart';
 
 class InputFieldWidget extends StatefulWidget {
   final String label;
@@ -85,7 +86,7 @@ class _InputFieldWidgetState extends State<InputFieldWidget> {
         labelText: widget.label,
         filled: true,
         fillColor: Colors.white,
-        hintStyle: TextStyle(color: AppColor.greyShade),
+        hintStyle: TextStyle(color: AppTheme.greyShadeColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),

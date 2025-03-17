@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:logger/logger.dart';
+
 import '../model/product_model.dart';
 import '../model/user_model.dart';
-import 'auth_service.dart';
 import '../utils/logger_util.dart';
-import 'package:logger/logger.dart';
+import 'auth_service.dart';
 
 /// Custom exception for database-related errors.
 class DatabaseException implements Exception {

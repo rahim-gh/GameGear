@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../constant/app_color.dart';
+
+import '../constant/app_theme.dart';
 import 'snackbar_widget.dart';
 
 class ButtonWidget extends StatefulWidget {
@@ -48,8 +49,8 @@ class _ButtonWidgetState extends State<ButtonWidget> {
       child: ElevatedButton(
         onPressed: _isLoading ? null : _handlePress,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColor.accent,
-          foregroundColor: AppColor.primary,
+          backgroundColor: AppTheme.accentColor,
+          foregroundColor: AppTheme.primaryColor,
           padding: const EdgeInsets.symmetric(vertical: 15),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -60,7 +61,8 @@ class _ButtonWidgetState extends State<ButtonWidget> {
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColor.primary),
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
                   strokeWidth: 2,
                 ),
               )

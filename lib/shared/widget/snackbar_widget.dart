@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../constant/app_color.dart';
-import '../utils/logger_util.dart';
 import 'package:logger/logger.dart';
+
+import '../constant/app_theme.dart';
+import '../utils/logger_util.dart';
 
 class SnackbarWidget {
   /// Displays a standardized snackbar message.
@@ -13,7 +14,7 @@ class SnackbarWidget {
     required BuildContext context,
     required String message,
     Duration duration = const Duration(seconds: 3),
-    Color backgroundColor = AppColor.accent,
+    Color backgroundColor = AppTheme.accentColor,
     String? actionLabel,
     VoidCallback? onActionPressed,
   }) {

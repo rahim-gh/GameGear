@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../shared/constant/app_color.dart';
+import '../../shared/constant/app_theme.dart';
 import '../../shared/model/user_model.dart';
 import '../../shared/service/auth_service.dart';
 import '../../shared/service/database_service.dart';
@@ -47,7 +47,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     if (_loading) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(
+            child: CircularProgressIndicator(
+          color: AppTheme.accentColor,
+        )),
       );
     }
 
@@ -85,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         AuthService().currentUser?.email ?? 'Unknown',
                         style: TextStyle(
                           fontSize: 15,
-                          color: AppColor.greyShade,
+                          color: AppTheme.greyShadeColor,
                           overflow: TextOverflow.fade,
                         ),
                       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../shared/constant/app_color.dart';
+
+import '../../shared/constant/app_theme.dart';
 
 class ProductScreen extends StatefulWidget {
   final product;
@@ -16,7 +17,7 @@ class _ProductScreenState extends State<ProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.secondary,
+      backgroundColor: AppTheme.secondaryColor,
       appBar: AppBar(
         title: Text(
           '${widget.product['name']}',
@@ -35,8 +36,8 @@ class _ProductScreenState extends State<ProductScreen> {
             Container(
               padding: EdgeInsets.only(top: 25),
               decoration: BoxDecoration(
-                border: Border.all(color: AppColor.greyShade, width: 0.5),
-                color: AppColor.primary,
+                border: Border.all(color: AppTheme.greyShadeColor, width: 0.5),
+                color: AppTheme.primaryColor,
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30)),
@@ -49,7 +50,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     Text(
                       widget.product['name'],
                       style: TextStyle(
-                        color: AppColor.accent,
+                        color: AppTheme.accentColor,
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
                       ),
@@ -67,7 +68,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                 return GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                       selectedColor =
+                                      selectedColor =
                                           widget.product['colors'][index];
                                     });
                                   },
@@ -80,8 +81,8 @@ class _ProductScreenState extends State<ProductScreen> {
                                           color: selectedColor ==
                                                   widget.product['colors']
                                                       [index]
-                                              ? AppColor.accent
-                                              : AppColor.greyShade,
+                                              ? AppTheme.accentColor
+                                              : AppTheme.greyShadeColor,
                                           width: 2),
                                       shape: BoxShape.circle,
                                       color: widget.product['colors'][index],
@@ -93,7 +94,7 @@ class _ProductScreenState extends State<ProductScreen> {
                         Row(
                           children: [
                             MaterialButton(
-                              color: AppColor.greyShade,
+                              color: AppTheme.greyShadeColor,
                               shape: CircleBorder(),
                               onPressed: () {
                                 setState(() {
@@ -104,12 +105,12 @@ class _ProductScreenState extends State<ProductScreen> {
                               },
                               child: Icon(
                                 Icons.remove,
-                                color: AppColor.primary,
+                                color: AppTheme.primaryColor,
                               ),
                             ),
                             Text('$quantity'),
                             MaterialButton(
-                              color: AppColor.accent,
+                              color: AppTheme.accentColor,
                               shape: CircleBorder(),
                               onPressed: () {
                                 setState(() {
@@ -120,7 +121,7 @@ class _ProductScreenState extends State<ProductScreen> {
                               },
                               child: Icon(
                                 Icons.add,
-                                color: AppColor.primary,
+                                color: AppTheme.primaryColor,
                               ),
                             ),
                           ],
@@ -130,9 +131,9 @@ class _ProductScreenState extends State<ProductScreen> {
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        border:
-                            Border.all(color: AppColor.greyShade, width: 0.5),
-                        color: AppColor.primary,
+                        border: Border.all(
+                            color: AppTheme.greyShadeColor, width: 0.5),
+                        color: AppTheme.primaryColor,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       height: 200,
@@ -142,7 +143,7 @@ class _ProductScreenState extends State<ProductScreen> {
                           widget.product['description'],
                           style: TextStyle(
                               fontSize: 16,
-                              color: AppColor.accent,
+                              color: AppTheme.accentColor,
                               fontWeight: FontWeight.w500),
                         ),
                       ),
@@ -158,14 +159,14 @@ class _ProductScreenState extends State<ProductScreen> {
                               style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColor.accent),
+                                  color: AppTheme.accentColor),
                             ),
                             Text(
                               'Total payable',
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColor.greyShade),
+                                  color: AppTheme.greyShadeColor),
                             ),
                           ],
                         ),
@@ -175,20 +176,20 @@ class _ProductScreenState extends State<ProductScreen> {
                             ),
                             minWidth: 150,
                             height: 50,
-                            color: AppColor.accent,
+                            color: AppTheme.accentColor,
                             onPressed: () {},
                             child: Row(
                               spacing: 3,
                               children: [
                                 Icon(
                                   Icons.shopping_cart,
-                                  color: AppColor.primary,
+                                  color: AppTheme.primaryColor,
                                   size: 25,
                                 ),
                                 Text(
                                   'Add to basket',
                                   style: TextStyle(
-                                      color: AppColor.primary,
+                                      color: AppTheme.primaryColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16),
                                 ),

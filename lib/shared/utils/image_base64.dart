@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/utils/logger_util.dart';
+import 'logger_util.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 

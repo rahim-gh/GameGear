@@ -1,15 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../main/main_screen.dart';
+import 'package:logger/logger.dart';
+
 import '../../shared/constant/app_asset.dart';
-import '../../shared/constant/app_color.dart';
+import '../../shared/constant/app_theme.dart';
 import '../../shared/service/auth_service.dart';
 import '../../shared/service/database_service.dart';
 import '../../shared/utils/logger_util.dart';
 import '../../shared/widget/button_widget.dart';
 import '../../shared/widget/input_widget.dart';
-import 'package:game_gear/shared/widget/snackbar_widget.dart';
-import 'package:logger/logger.dart';
+import '../../shared/widget/snackbar_widget.dart';
+import '../main/main_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -118,7 +119,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.primary,
+      backgroundColor: AppTheme.primaryColor,
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
@@ -174,8 +175,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   CheckboxListTile(
                     title: const Text("I am a shop owner"),
                     value: _isShopOwner,
-                    activeColor: AppColor.accent,
-                    checkColor: AppColor.primary,
+                    activeColor: AppTheme.accentColor,
+                    checkColor: AppTheme.primaryColor,
                     onChanged: (bool? value) {
                       setState(() {
                         _isShopOwner = value ?? false;
@@ -193,14 +194,14 @@ class _SignupScreenState extends State<SignupScreen> {
                     children: [
                       const Text(
                         "Already have an account? ",
-                        style: TextStyle(color: AppColor.greyShade),
+                        style: TextStyle(color: AppTheme.greyShadeColor),
                       ),
                       TextButton(
                         onPressed: navigateToLogin,
                         child: const Text(
                           "Login",
                           style: TextStyle(
-                            color: AppColor.accent,
+                            color: AppTheme.accentColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constant/app_color.dart';
+import '../constant/app_theme.dart';
 
 class NavBarWidget extends StatelessWidget {
   final int selectedIndex;
@@ -17,7 +17,7 @@ class NavBarWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColor.accent,
+        color: AppTheme.accentColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -35,27 +35,27 @@ class NavBarWidget extends StatelessWidget {
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: 'Home',
-              backgroundColor: AppColor.accent,
+              backgroundColor: AppTheme.accentColor,
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.search),
               label: 'Search',
-              backgroundColor: AppColor.accent,
+              backgroundColor: AppTheme.accentColor,
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart),
               label: 'Basket',
-              backgroundColor: AppColor.accent,
+              backgroundColor: AppTheme.accentColor,
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
               label: 'Profile',
-              backgroundColor: AppColor.accent,
+              backgroundColor: AppTheme.accentColor,
             ),
           ],
           currentIndex: selectedIndex,
-          unselectedItemColor: AppColor.greyShade,
-          selectedItemColor: AppColor.primary,
+          unselectedItemColor: AppTheme.greyShadeColor,
+          selectedItemColor: AppTheme.primaryColor,
           onTap: onItemTapped, // Delegate control to the parent widget
         ),
       ),

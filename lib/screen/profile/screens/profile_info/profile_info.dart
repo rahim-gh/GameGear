@@ -3,14 +3,14 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/model/user_model.dart';
-import 'package:game_gear/shared/service/auth_service.dart';
-import 'package:game_gear/shared/service/database_service.dart';
-import 'package:game_gear/shared/utils/logger_util.dart';
-import 'package:game_gear/shared/widget/appbar_widget.dart';
-import 'package:game_gear/shared/widget/button_widget.dart';
-import 'package:game_gear/shared/widget/input_widget.dart';
-import 'package:game_gear/shared/widget/snackbar_widget.dart';
+import '../../../../shared/model/user_model.dart';
+import '../../../../shared/service/auth_service.dart';
+import '../../../../shared/service/database_service.dart';
+import '../../../../shared/utils/logger_util.dart';
+import '../../../../shared/widget/appbar_widget.dart';
+import '../../../../shared/widget/button_widget.dart';
+import '../../../../shared/widget/input_widget.dart';
+import '../../../../shared/widget/snackbar_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 

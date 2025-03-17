@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/constant/app_asset.dart';
-import 'package:game_gear/shared/constant/app_color.dart';
+import '../../shared/constant/app_theme.dart';
+import '../../shared/constant/app_data.dart';
 // import 'package:game_gear/shared/model/user_model.dart';
 import 'package:game_gear/shared/service/auth_service.dart';
 // import 'package:game_gear/shared/service/database_service.dart';
 // import 'package:game_gear/shared/utils/logger_util.dart';
 import 'package:game_gear/shared/widget/appbar_widget.dart';
-import 'package:game_gear/shared/widget/product_widget.dart';
+import 'package:game_gear/shared/widget/home_product_widget.dart';
 // import 'package:logger/logger.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -109,12 +109,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.secondary,
+      backgroundColor: AppTheme.secondaryColor,
       appBar: AppBarWidget(title: 'Home'),
       body: ListView.builder(
-        itemCount: AppAsset.products.length,
+        itemCount: AppData.products.length,
         itemBuilder: (context, index) {
-          return ProductWidget(index: index);
+          return HomeProductWidget(index: index);
         },
       ),
 

@@ -2,12 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../screen/product_screen/product_screen.dart';
-import '../constant/app_asset.dart';
-import '../constant/app_color.dart';
+import '../constant/app_theme.dart';
+import '../constant/app_data.dart';
 
-class ProductWidget extends StatelessWidget {
+class BasketProductWidget extends StatelessWidget {
   final int index;
-  const ProductWidget({
+  const BasketProductWidget({
     super.key,
     required this.index,
   });
@@ -17,66 +17,53 @@ class ProductWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProductScreen(product: AppAsset.products[index]);
+          return ProductScreen(product: AppData.products[index]);
         }));
       },
       child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(20),
-          color: AppColor.primary,
-        ),
+        decoration: AppTheme.cardDecoration,
         margin: const EdgeInsets.all(10),
-        width: MediaQuery.of(context).size.width,
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              Text(
-                AppAsset.products[index]['name'],
-                style: TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  color: AppColor.accent,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Text(AppData.products[index]['name'], style: AppTheme.titleStyle),
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Hero(
-                    tag: AppAsset.products[index]['imageUrl'],
+                    tag: AppData.products[index]['imageUrl'],
                     child: ClipRRect(
                         child: Image(
                             width: 120,
                             fit: BoxFit.fill,
                             image: AssetImage(
-                                AppAsset.products[index]['imageUrl']))),
+                                AppData.products[index]['imageUrl']))),
                   ),
                   Column(
+                    spacing: 5,
                     children: [
                       Text(
-                        "${AppAsset.products[index]['price']}\$",
+                        "${AppData.products[index]['price']}\$",
+                        style: AppTheme.titleStyle,
+                      ),
+                      Text(
+                        "Quantity: 1",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              WidgetStateProperty.all(AppColor.accent),
-                          foregroundColor:
-                              WidgetStateProperty.all(AppColor.primary),
-                        ),
+                        style: AppTheme.buttonStyle,
                         onPressed: () {
                           if (kDebugMode) {
                             print(
-                                "${AppAsset.products[index]["name"]} is added to basket");
+                                "${AppData.products[index]["name"]} is added to basket");
                           }
                         },
-                        child: Text("Add to Basket"),
+                        child: Text("Remove"),
                       ),
                     ],
                   )
