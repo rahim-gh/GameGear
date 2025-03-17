@@ -470,6 +470,13 @@ obj/
 
 !/gradle/wrapper/gradle-wrapper.jar
 
+### Backup ###
+*.bak
+*.gho
+*.ori
+*.orig
+*.tmp
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,visualstudiocode,firebase,flutter,java,kotlin,groovy,gradle,dart,linux,android,androidstudio
 
 # FVM related
