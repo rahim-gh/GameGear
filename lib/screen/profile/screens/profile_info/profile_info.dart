@@ -109,6 +109,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
             if (emailUpdated) {
               logs('Auth email confirmed and updated successfully',
                   level: Level.info);
+              if (!mounted) return;
               SnackbarWidget.show(
                 context: context,
                 message: "Email updated. Please sign in again.",
@@ -146,7 +147,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
         await DatabaseService().updateUser(
           uid,
           _fullNameController.text,
-          imageToSave,
+          imageBase64: imageToSave,
         );
         logs('Firestore updated successfully for user info', level: Level.info);
 
