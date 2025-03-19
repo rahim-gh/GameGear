@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           // builder: (context) => HomeScreen(uid: credential.user!.uid)),
-          builder: (context) => MainScreen(uid: credential.user!.uid),
+          builder: (context) => MainScreen(),
         ),
       );
     } on FirebaseAuthException catch (e) {

@@ -66,6 +66,13 @@ class _InputFieldWidgetState extends State<InputFieldWidget> {
       } else if (!regex.hasMatch(input)) {
         return 'Name must only contain letters and spaces (2-50 characters)';
       }
+    } else if (widget.type == 'price') {
+      final regex = RegExp(r'^\d+\.?\d{0,2}');
+      if (input.isEmpty) {
+        return 'Price field cannot be empty';
+      } else if (!regex.hasMatch(input)) {
+        return 'Enter a valid price';
+      }
     } else if (widget.type.toLowerCase() == 'normal') {
       return null;
     } else {

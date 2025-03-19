@@ -1,10 +1,11 @@
-// product_screen.dart
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Add this import
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 import '../../shared/constant/app_theme.dart';
-import '../../shared/model/basket_model.dart'; // Add this import
+import '../../shared/model/basket_model.dart';
 import '../../shared/model/product_model.dart';
+import '../../shared/utils/logger_util.dart'; // For logging
 
 class ProductScreen extends StatefulWidget {
   final Product product;
@@ -17,13 +18,64 @@ class ProductScreen extends StatefulWidget {
 class _ProductScreenState extends State<ProductScreen> {
   int quantity = 1;
 
+  void _decrementQuantity() {
+    try {
+      if (quantity > 1) {
+        setState(() {
+          quantity--;
+        });
+        logs("Decreased quantity to $quantity for ${widget.product.name}",
+            level: Level.debug);
+      } else {
+        logs("Attempt to reduce quantity below 1 for ${widget.product.name}",
+            level: Level.warning);
+      }
+    } catch (error, stackTrace) {
+      logs("Error decrementing quantity: $error",
+          level: Level.error, error: error, stackTrace: stackTrace);
+    }
+  }
+
+  void _incrementQuantity() {
+    try {
+      setState(() {
+        quantity++;
+      });
+      logs("Increased quantity to $quantity for ${widget.product.name}",
+          level: Level.debug);
+    } catch (error, stackTrace) {
+      logs("Error incrementing quantity: $error",
+          level: Level.error, error: error, stackTrace: stackTrace);
+    }
+  }
+
+  void _addToBasket(BasketModel basketModel) {
+    try {
+      basketModel.addProduct(widget.product, quantity: quantity);
+      logs("Added ${widget.product.name} (x$quantity) to basket",
+          level: Level.info);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${widget.product.name} (x$quantity) added to basket'),
+        ),
+      );
+    } catch (error, stackTrace) {
+      logs("Error adding ${widget.product.name} to basket: $error",
+          level: Level.error, error: error, stackTrace: stackTrace);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error adding product to basket: $error'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final basketModel =
-        Provider.of<BasketModel>(context); // Access the basket model
+    final basketModel = Provider.of<BasketModel>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: AppTheme.secondaryColor,
+      backgroundColor: AppTheme.primaryColor,
       appBar: AppBar(
         title: Text(widget.product.name),
       ),
@@ -33,21 +85,23 @@ class _ProductScreenState extends State<ProductScreen> {
             Hero(
               tag: widget.product.name,
               child: Image(
-                image: AssetImage(widget.product.imagesBase64?.first ??
-                    'assets/images/default_image.png'),
+                image: AssetImage(
+                  widget.product.imagesBase64?.first ??
+                      'assets/images/default_image.png',
+                ),
                 width: MediaQuery.of(context).size.width * 0.7,
               ),
             ),
             Container(
               padding: const EdgeInsets.only(top: 25),
               decoration: BoxDecoration(
-                  border:
-                      Border.all(color: AppTheme.greyShadeColor, width: 0.5),
-                  color: AppTheme.primaryColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  )),
+                border: Border.all(color: AppTheme.greyShadeColor, width: 0.5),
+                color: AppTheme.primaryColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
@@ -69,13 +123,7 @@ class _ProductScreenState extends State<ProductScreen> {
                             MaterialButton(
                               color: AppTheme.greyShadeColor,
                               shape: const CircleBorder(),
-                              onPressed: () {
-                                setState(() {
-                                  if (quantity > 1) {
-                                    quantity--;
-                                  }
-                                });
-                              },
+                              onPressed: _decrementQuantity,
                               child: Icon(
                                 Icons.remove,
                                 color: AppTheme.primaryColor,
@@ -85,11 +133,7 @@ class _ProductScreenState extends State<ProductScreen> {
                             MaterialButton(
                               color: AppTheme.accentColor,
                               shape: const CircleBorder(),
-                              onPressed: () {
-                                setState(() {
-                                  quantity++;
-                                });
-                              },
+                              onPressed: _incrementQuantity,
                               child: Icon(
                                 Icons.add,
                                 color: AppTheme.primaryColor,
@@ -113,9 +157,10 @@ class _ProductScreenState extends State<ProductScreen> {
                         child: Text(
                           widget.product.description,
                           style: TextStyle(
-                              fontSize: 16,
-                              color: AppTheme.accentColor,
-                              fontWeight: FontWeight.w500),
+                            fontSize: 16,
+                            color: AppTheme.accentColor,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
@@ -126,14 +171,16 @@ class _ProductScreenState extends State<ProductScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                '\$${(widget.product.price * quantity).toStringAsFixed(2)}',
-                                style: AppTheme.titleStyle),
+                              '\$${(widget.product.price * quantity).toStringAsFixed(2)}',
+                              style: AppTheme.titleStyle,
+                            ),
                             Text(
                               'Total payable',
                               style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.greyShadeColor),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.greyShadeColor,
+                              ),
                             ),
                           ],
                         ),
@@ -144,17 +191,7 @@ class _ProductScreenState extends State<ProductScreen> {
                           minWidth: 150,
                           height: 50,
                           color: AppTheme.accentColor,
-                          onPressed: () {
-                            // Add the product to the basket with the selected quantity
-                            basketModel.addProduct(widget.product,
-                                quantity: quantity);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    '${widget.product.name} (x$quantity) added to basket'),
-                              ),
-                            );
-                          },
+                          onPressed: () => _addToBasket(basketModel),
                           child: Row(
                             children: [
                               Icon(
@@ -166,9 +203,10 @@ class _ProductScreenState extends State<ProductScreen> {
                               Text(
                                 'Add to basket',
                                 style: TextStyle(
-                                    color: AppTheme.primaryColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
+                                  color: AppTheme.primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                             ],
                           ),

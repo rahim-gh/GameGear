@@ -15,11 +15,47 @@ class BasketScreen extends StatefulWidget {
 }
 
 class _BasketScreenState extends State<BasketScreen> {
+  /// Prompts the user for the quantity to remove.
+  Future<int?> _askQuantityToRemove(
+      BuildContext context, int currentQuantity) async {
+    final TextEditingController removalController = TextEditingController();
+    return await showDialog<int>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Remove Product"),
+          content: TextField(
+            controller: removalController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: "Enter quantity to remove (max: $currentQuantity)",
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(), // Cancel
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final removal = int.tryParse(removalController.text);
+                Navigator.of(context).pop(removal);
+              },
+              child: const Text("Remove"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final basketModel = Provider.of<BasketModel>(context);
+    final productsMap = basketModel.products;
 
     return Scaffold(
+      backgroundColor: AppTheme.primaryColor,
       appBar: AppBarWidget(title: "Basket"),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -49,22 +85,29 @@ class _BasketScreenState extends State<BasketScreen> {
                   onPressed: () {
                     // Implement buy logic here
                   },
-                  child: Text('Buy'),
+                  child: const Text('Buy'),
                 ),
               ],
             ),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: basketModel.products.length,
+              itemCount: productsMap.length,
               itemBuilder: (context, index) {
-                final product = basketModel.products.keys.elementAt(index);
-                final quantity = basketModel.products[product];
+                final product = productsMap.keys.elementAt(index);
+                final quantity = productsMap[product] ?? 0;
+                if (quantity == 0) return const SizedBox.shrink();
+
                 return BasketProductWidget(
                   product: product,
-                  quantity: quantity!,
-                  onRemove: () {
-                    basketModel.removeProduct(product);
+                  quantity: quantity,
+                  onRemove: () async {
+                    final removalQuantity =
+                        await _askQuantityToRemove(context, quantity);
+                    if (removalQuantity != null && removalQuantity > 0) {
+                      basketModel.removeProductQuantity(
+                          product, removalQuantity);
+                    }
                   },
                 );
               },
