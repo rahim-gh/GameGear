@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:game_gear/shared/constant/app_theme.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -39,14 +40,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      color: AppTheme.primaryColor,
       debugShowCheckedModeBanner: false,
-      // Example: Directing to LoginScreen then navigating to MainScreen upon success.
       // home: const LoginScreen(),
       routes: {
         '/': (context) => const DirectionScreen(),
         'signup_screen': (context) => const SignupScreen(),
         'login_screen': (context) => const LoginScreen(),
-        'main_screen': (context) => const MainScreen(uid: '0'),
+        'main_screen': (context) => const MainScreen(),
         'home_screen': (context) => const HomeScreen(),
         'search_screen': (context) => const SearchScreen(),
         'basket_screen': (context) => const BasketScreen(),

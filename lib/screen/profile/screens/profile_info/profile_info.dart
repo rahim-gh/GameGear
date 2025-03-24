@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:flutter/material.dart';
+import 'package:game_gear/shared/constant/app_theme.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 
@@ -223,6 +224,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.primaryColor,
       appBar: AppBarWidget(title: "Profile Info"),
       body: _loading
           ? const Center(child: CircularProgressIndicator())

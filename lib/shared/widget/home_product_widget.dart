@@ -1,4 +1,6 @@
 // home_product_widget.dart
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../../screen/product/product_screen.dart';
@@ -42,11 +44,24 @@ class HomeProductWidget extends StatelessWidget {
                   Hero(
                     tag: product.name, // Use product name as a unique tag
                     child: ClipRRect(
-                      child: Image(
-                        width: 120,
-                        fit: BoxFit.fill,
-                        image: AssetImage(product.imagesBase64?.first ??
-                            'assets/images/default_image.png'), // Use the first image or a default image
+                      borderRadius:
+                          BorderRadius.circular(20), // 20 pixel corner radius
+                      child: SizedBox(
+                        width: 120, // Set the desired width
+                        height: 120, // Set the desired height to make it square
+                        child: product.imagesBase64?.isNotEmpty == true
+                            ? Image.memory(
+                                base64Decode(product.imagesBase64!.first),
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                'assets/images/default_image.png',
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                   ),

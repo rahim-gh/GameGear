@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/shared/constant/app_theme.dart';
+import 'package:game_gear/shared/service/auth_service.dart';
 
 import '../../shared/model/user_model.dart';
-import '../../shared/service/auth_service.dart';
 import '../../shared/service/database_service.dart';
 import '../../shared/widget/navbar_widget.dart';
 import '../basket/basket_screen.dart';
@@ -12,47 +13,40 @@ import '../search/search_screen.dart';
 import 'logic/nav_bar_visibility_controller.dart';
 
 class MainScreen extends StatefulWidget {
-  final String uid;
-  const MainScreen({
-    super.key,
-    required this.uid,
-  });
+  const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  late User _user;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchUserData();
-  }
-
-  Future<void> _fetchUserData() async {
-    // Fetch non-sensitive user data from Firestore.
-    final user =
-        await DatabaseService().getUser(AuthService().currentUser!.uid);
-
-    setState(() {
-      _user = user!;
-    });
-  }
-
-  int _selectedIndex = 0;
+  final String uid = AuthService().currentUser!.uid;
   final NavBarVisibilityController _navBarController =
       NavBarVisibilityController();
+  int _selectedIndex = 0;
 
-  // List of screens.
-  List<Widget> get _widgetOptions => [
-        const HomeScreen(),
-        const SearchScreen(),
-        if (_user.isShopOwner) const AddProductScreen(),
-        const BasketScreen(),
-        const ProfileScreen(),
+  // Initialize _userFuture directly during declaration.
+  final Future<User?> _userFuture =
+      DatabaseService().getUser(AuthService().currentUser!.uid);
+
+  /// Build the list of screens based on the user's role.
+  List<Widget> _buildWidgetOptions(User user) {
+    if (user.isShopOwner) {
+      return [
+        const HomeScreen(), // Shop owner's own products.
+        const SearchScreen(), // Search his own products.
+        const AddProductScreen(), // Add new product.
+        const ProfileScreen(), // Profile.
       ];
+    } else {
+      return [
+        const HomeScreen(), // View all products.
+        const SearchScreen(), // Search products.
+        const BasketScreen(), // Basket.
+        const ProfileScreen(), // Profile.
+      ];
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -68,10 +62,33 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          // Wrap the screen content with a NotificationListener.
+    return FutureBuilder<User?>(
+      future: _userFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Display a loading indicator while fetching user data.
+          return Scaffold(
+            backgroundColor: AppTheme.primaryColor,
+            body: const Center(child: CircularProgressIndicator()),
+            bottomNavigationBar: const SizedBox.shrink(),
+          );
+        }
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+          return Scaffold(
+            backgroundColor: AppTheme.primaryColor,
+            body: const Center(
+              child: Text(
+                'Error loading user data',
+              ),
+            ),
+            bottomNavigationBar: const SizedBox.shrink(),
+          );
+        }
+        final user = snapshot.data!;
+        final widgetOptions = _buildWidgetOptions(user);
+
+        return Scaffold(
+          backgroundColor: AppTheme.primaryColor,
           body: NotificationListener<ScrollNotification>(
             onNotification: (notification) {
               if (notification is ScrollUpdateNotification) {
@@ -79,20 +96,13 @@ class _MainScreenState extends State<MainScreen> {
               }
               return false;
             },
-            child: _widgetOptions[_selectedIndex],
+            child: widgetOptions[_selectedIndex],
           ),
-        ),
-        // Animate the nav bar based on the controller's visibility state.
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: AnimatedBuilder(
+          bottomNavigationBar: AnimatedBuilder(
             animation: _navBarController,
             builder: (context, child) {
               return AnimatedSlide(
                 duration: const Duration(milliseconds: 100),
-                // Slide out of view when hidden.
                 offset: _navBarController.isVisible
                     ? Offset.zero
                     : const Offset(0, 1),
@@ -102,11 +112,11 @@ class _MainScreenState extends State<MainScreen> {
             child: NavBarWidget(
               selectedIndex: _selectedIndex,
               onItemTapped: _onItemTapped,
-              user: _user,
+              user: user,
             ),
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }

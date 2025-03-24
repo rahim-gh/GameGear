@@ -17,11 +17,8 @@ class _DirectionScreenState extends State<DirectionScreen> {
     return Scaffold(
       body: StreamBuilder<firebase_auth.User?>(
         stream: firebase_auth.FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) => snapshot.hasData
-            ? MainScreen(
-                uid: '0',
-              )
-            : LoginScreen(),
+        builder: (context, snapshot) =>
+            snapshot.hasData ? MainScreen() : LoginScreen(),
       ),
     );
   }

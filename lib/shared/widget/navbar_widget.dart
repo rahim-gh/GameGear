@@ -15,6 +15,56 @@ class NavBarWidget extends StatelessWidget {
     required this.user,
   });
 
+  List<BottomNavigationBarItem> _buildNavItems() {
+    if (user.isShopOwner) {
+      return [
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+          backgroundColor: AppTheme.accentColor,
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.search),
+          label: 'Search',
+          backgroundColor: AppTheme.accentColor,
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.add),
+          label: 'Add',
+          backgroundColor: AppTheme.accentColor,
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profile',
+          backgroundColor: AppTheme.accentColor,
+        ),
+      ];
+    } else {
+      return [
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+          backgroundColor: AppTheme.accentColor,
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.search),
+          label: 'Search',
+          backgroundColor: AppTheme.accentColor,
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.shopping_cart),
+          label: 'Basket',
+          backgroundColor: AppTheme.accentColor,
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profile',
+          backgroundColor: AppTheme.accentColor,
+        ),
+      ];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,38 +84,12 @@ class NavBarWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: BottomNavigationBar(
           elevation: 0,
-          items: [
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-              backgroundColor: AppTheme.accentColor,
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
-              backgroundColor: AppTheme.accentColor,
-            ),
-            if (user.isShopOwner)
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.add),
-                label: 'Add',
-                backgroundColor: AppTheme.accentColor,
-              ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
-              label: 'Basket',
-              backgroundColor: AppTheme.accentColor,
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-              backgroundColor: AppTheme.accentColor,
-            ),
-          ],
+          items: _buildNavItems(),
           currentIndex: selectedIndex,
           unselectedItemColor: AppTheme.greyShadeColor,
           selectedItemColor: AppTheme.primaryColor,
-          onTap: onItemTapped, // Delegate control to the parent widget
+          onTap: onItemTapped,
+          type: BottomNavigationBarType.shifting,
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/shared/constant/app_theme.dart';
 
 import '../../shared/widget/appbar_widget.dart';
 
@@ -14,6 +15,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.primaryColor,
       appBar: AppBarWidget(title: "Search"),
     );
   }

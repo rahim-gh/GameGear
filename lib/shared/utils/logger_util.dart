@@ -64,5 +64,6 @@ void logs(
   dynamic error,
   StackTrace? stackTrace,
 }) {
-  AppLogger.log(message, level: level, error: error, stackTrace: stackTrace);
+  AppLogger.log(message,
+      level: level, error: error, stackTrace: StackTrace.current);
 }

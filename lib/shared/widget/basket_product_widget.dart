@@ -1,4 +1,6 @@
 // basket_product_widget.dart
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../../screen/product/product_screen.dart';
@@ -42,15 +44,19 @@ class BasketProductWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Hero(
-                    tag: product.name,
+                    tag: product.name, // Use product name as a unique tag
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Image(
                         width: 120,
                         height: 120,
                         fit: BoxFit.cover,
-                        image: AssetImage(product.imagesBase64?.first ??
-                            'assets/images/default_image.png'),
+                        image: (product.imagesBase64 != null &&
+                                product.imagesBase64!.isNotEmpty)
+                            ? MemoryImage(
+                                base64Decode(product.imagesBase64!.first))
+                            : AssetImage('assets/images/default_image.png')
+                                as ImageProvider,
                         errorBuilder: (context, error, stackTrace) {
                           return Image.asset(
                             'assets/images/default_image.png',
@@ -70,7 +76,7 @@ class BasketProductWidget extends StatelessWidget {
                       ),
                       Text(
                         "Quantity: $quantity",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),

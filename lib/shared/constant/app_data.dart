@@ -4,7 +4,7 @@ class AppData {
   // Convert the static list of products into a list of Product objects
   static final List<Product> products = [
     Product(
-      id: '1', // Add id
+      // id: '1', // Add id
       name: 'Black Wireless RGB Gaming Mouse',
       description: '''
 Experience precision and performance with this sleek black wireless gaming mouse. With RGB lighting along the edges, this mouse stands out while offering wireless convenience. Its adjustable DPI settings and fast response rate provide a seamless gaming experience, making it perfect for both casual and professional gamers. The ergonomic design ensures comfort, while the programmable buttons give you full control over your gameplay.
@@ -25,7 +25,7 @@ Compatible with PC, Mac, and gaming consoles.''',
       quantity: 10, // Add quantity
     ),
     Product(
-      id: '2', // Add id
+      // id: '2', // Add id
       name: 'Ergonomic Black Gaming Mouse with RGB Lighting',
       description: '''
 Designed for both comfort and precision, this ergonomic black gaming mouse with side grips offers a smooth gaming experience. The subtle RGB lighting gives it a sleek aesthetic, while the precision sensor and adjustable DPI allow for accurate tracking. With customizable buttons and a wireless connection, this mouse is ideal for gamers looking for both style and functionality.
@@ -46,7 +46,7 @@ Long battery life and responsive performance.''',
       quantity: 5, // Add quantity
     ),
     Product(
-      id: '3', // Add id
+      // id: '3', // Add id
       name: 'High-Performance RGB Gaming PC Tower',
       description: '''
 Power up your gaming experience with this high-performance gaming PC tower. Its modern design showcases RGB fans that not only cool your system but also provide a vibrant and customizable lighting effect. Built for speed and performance, this tower includes the latest processors and graphics cards, ensuring smooth gameplay at high settings. Whether you're into competitive gaming or high-end video editing, this PC tower delivers unmatched performance and style.
@@ -65,7 +65,7 @@ Customizable RGB lighting for a personalized setup.''',
       quantity: 3, // Add quantity
     ),
     Product(
-      id: '4', // Add id
+      // id: '4', // Add id
       name: 'Mars Gaming RGB Wired Controller',
       description: '''
 The Mars Gaming controller is built for avid gamers who value style and precision. With its transparent shell and dynamic RGB lighting, this controller is a showstopper in any setup. It features ergonomic, responsive controls, ensuring swift reactions and a comfortable grip for hours of play. Designed for compatibility with multiple platforms, it delivers an immersive experience with customizable buttons and smooth analog sticks.
@@ -84,7 +84,7 @@ Plug-and-play functionality.''',
       quantity: 7, // Add quantity
     ),
     Product(
-      id: '5', // Add id
+      // id: '5', // Add id
       name: 'Pink Gaming Headset with RGB Surround Sound',
       description: '''
 Elevate your gaming experience with this stylish pink gaming headset, featuring RGB lighting for a vibrant, customizable glow. Equipped with a high-fidelity sound system and surround sound capabilities, it immerses you in crystal-clear audio, giving you a competitive edge in any game. The ergonomic design and cushioned ear cups ensure maximum comfort during long gaming sessions. Its flexible, noise-canceling microphone allows for clear communication with teammates.
@@ -105,7 +105,7 @@ Compatible with PC, PlayStation, Xbox, and other platforms.''',
       quantity: 8, // Add quantity
     ),
     Product(
-      id: '6', // Add id
+      // id: '6', // Add id
       name: 'RGB Gaming Headset with Surround Sound',
       description: '''
 Immerse yourself in high-quality sound with this RGB gaming headset. Designed for gamers, this headset delivers crystal-clear audio with deep bass and 7.1 surround sound for an enhanced gaming experience. The adjustable headband and cushioned ear cups ensure maximum comfort for long gaming sessions. With a detachable noise-canceling microphone, team communication is clearer than ever. Compatible with PC, PS5, Xbox, and more, this gaming headset is a must-have for any serious gamer.
@@ -127,7 +127,7 @@ Key Features:
       quantity: 12, // Add quantity
     ),
     Product(
-      id: '7', // Add id
+      // id: '7', // Add id
       name: 'High-Precision RGB Gaming Mouse',
       description: '''
 Upgrade your gaming setup with this high-precision RGB gaming mouse. Designed for competitive gamers, it features an ergonomic design, customizable buttons, and ultra-responsive sensors for lightning-fast accuracy. The adjustable DPI settings allow you to switch between different sensitivity levels for precise control in any game. With dynamic RGB lighting, this mouse adds a stylish touch to your gaming rig.
@@ -149,7 +149,7 @@ Key Features:
       quantity: 15, // Add quantity
     ),
     Product(
-      id: '8', // Add id
+      // id: '8', // Add id
       name: 'Programmable RGB Gaming Mouse with Side Buttons',
       description: '''
 Enhance your gaming experience with this programmable RGB gaming mouse, designed for MMO, MOBA, and FPS gamers. With multiple customizable side buttons, you can program macros and keybindings for quicker in-game actions. The ergonomic design ensures comfort for long gaming sessions, while the high-precision sensor delivers exceptional accuracy. Adjustable DPI settings allow you to fine-tune sensitivity on the fly, and the dynamic RGB lighting lets you personalize your setup.
@@ -171,7 +171,7 @@ Key Features:
       quantity: 20, // Add quantity
     ),
     Product(
-      id: '9', // Add id
+      // id: '9', // Add id
       name: 'Surround Sound RGB Gaming Headset',
       description: '''
 Experience high-fidelity audio with this surround sound RGB gaming headset. Designed for immersive gameplay, it features a noise-canceling microphone, dynamic RGB lighting, and ultra-soft ear cushions for all-day comfort. The high-precision audio drivers deliver deep bass and crisp sound for competitive gaming, music, and streaming. The flexible, adjustable design ensures a perfect fit, while multi-platform compatibility makes it ideal for PC, PS5, Xbox, and more.
@@ -193,7 +193,7 @@ Key Features:
       quantity: 25, // Add quantity
     ),
     Product(
-      id: '10', // Add id
+      // id: '10', // Add id
       name: 'Mechanical RGB Gaming Keyboard',
       description: '''
 Take your gaming experience to the next level with this mechanical RGB gaming keyboard. Designed for precision and durability, this keyboard features responsive mechanical switches for lightning-fast key presses. The customizable RGB lighting enhances your setup, while the ergonomic design ensures comfort during long gaming sessions. Anti-ghosting and full-key rollover provide reliable performance, making it the perfect choice for competitive gamers.
@@ -215,7 +215,7 @@ Key Features:
       quantity: 30, // Add quantity
     ),
     Product(
-      id: '11', // Add id
+      // id: '11', // Add id
       name: 'Ergonomic RGB Gaming Keyboard with Wrist Rest',
       description: '''
 Enhance your gaming setup with this ergonomic RGB gaming keyboard featuring a unique design and wrist rest for added comfort. Built for gamers, this keyboard provides tactile and responsive keys, customizable RGB lighting, and a durable construction. The anti-ghosting technology ensures every keystroke is registered accurately, making it ideal for both casual and competitive gaming.
@@ -237,7 +237,7 @@ Key Features:
       quantity: 35, // Add quantity
     ),
     Product(
-      id: '12', // Add id
+      // id: '12', // Add id
       name: 'Wired Gaming Headset with Noise Isolation',
       description: '''
 Immerse yourself in your games with this wired gaming headset featuring powerful sound and noise isolation. Designed for comfort and durability, this headset includes cushioned ear cups and an adjustable headband for extended gaming sessions. The noise-canceling microphone ensures crystal-clear communication with your teammates, while the high-quality drivers deliver deep bass and crisp audio.
@@ -259,7 +259,7 @@ Key Features:
       quantity: 40, // Add quantity
     ),
     Product(
-      id: '13', // Add id
+      // id: '13', // Add id
       name: 'Thrustmaster Ferrari Racing Wheel Red Legend Edition',
       description: '''
 Take your racing experience to the next level with the Thrustmaster Ferrari Racing Wheel Red Legend Edition. Designed for precision and realism, this racing wheel features a rubber-coated grip for enhanced control, responsive pedals, and a programmable button layout for a customized driving experience. Whether you're playing on PC or PlayStation, this officially licensed Ferrari wheel ensures an immersive and thrilling ride.
@@ -281,7 +281,7 @@ Key Features:
       quantity: 45, // Add quantity
     ),
     Product(
-      id: '14', // Add id
+      // id: '14', // Add id
       name: 'Universal Racing Wheel with Pedals',
       description: '''
 Experience the thrill of racing with this universal racing wheel and pedal set. Designed for precision and control, this racing wheel features a comfortable grip, responsive pedals, and a realistic driving experience. Compatible with multiple platforms, it provides immersive gameplay whether you're racing on PC, PlayStation, or Xbox. 
@@ -303,7 +303,7 @@ Key Features:
       quantity: 50, // Add quantity
     ),
     Product(
-      id: '15', // Add id
+      // id: '15', // Add id
       name: 'Advanced RGB Mechanical Gaming Keyboard',
       description: '''
 Enhance your gaming setup with this advanced RGB mechanical gaming keyboard, designed for ultimate precision and durability. Featuring fully customizable RGB backlighting, mechanical switches for tactile feedback, and dedicated macro keys for a competitive edge, this keyboard is perfect for both casual and professional gamers. 
@@ -325,7 +325,7 @@ Key Features:
       quantity: 55, // Add quantity
     ),
     Product(
-      id: '16', // Add id
+      // id: '16', // Add id
       name: 'KOTION EACH K5 RGB Gaming Headset',
       description: '''
 Immerse yourself in the world of gaming with the KOTION EACH K5 RGB Gaming Headset. Designed for ultimate comfort and an immersive sound experience, this headset features high-quality stereo sound, noise-isolating ear cushions, and a flexible noise-canceling microphone. The RGB lighting on the ear cups enhances your gaming setup with a futuristic look.
