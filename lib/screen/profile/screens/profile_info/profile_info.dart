@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/constant/app_theme.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 
+import '../../../../shared/constant/app_theme.dart';
 import '../../../../shared/model/user_model.dart';
 import '../../../../shared/service/auth_service.dart';
 import '../../../../shared/service/database_service.dart';

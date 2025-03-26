@@ -1,19 +1,26 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Rules for products stored at the root level
+    // Products collection rules
     match /products/{productId} {
-      // Allow any authenticated user to read products
+      // Allow reads for authenticated users
       allow read: if request.auth != null;
-
-      // Allow create, update, and delete only if the user is the owner of the product
-      allow create, update, delete: if request.auth != null && request.auth.uid == request.resource.data.ownerUid;
+      
+      // Allow writes:
+      // - Create: User must be authenticated and set themselves as owner
+      // - Update/Delete: User must be authenticated and be the owner
+      allow create: if request.auth != null && 
+                   request.auth.uid == request.resource.data.ownerUid;
+      
+      allow update, delete: if request.auth != null && 
+                           request.auth.uid == resource.data.ownerUid;
     }
 
-    // Rules for the users collection remain intact
+    // Users collection rules
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Users can only access their own document
+      allow read, write: if request.auth != null && 
+                        request.auth.uid == userId;
     }
 
     // Deny all other access by default

@@ -78,4 +78,51 @@ class ImageBase64 {
       rethrow;
     }
   }
+
+  Image toProductImage(
+    String? base64String, {
+    String? name,
+    BoxFit fit = BoxFit.cover,
+    double? width,
+    double? height,
+  }) {
+    logs('Creating product image...', level: Level.debug);
+    try {
+      return Image(
+        image: _getProductImageProvider(base64String, name: name),
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildFallbackProductImage(
+              fit: fit, width: width, height: height);
+        },
+      );
+    } catch (e) {
+      logs('Error creating product image: $e', level: Level.error, error: e);
+      return _buildFallbackProductImage(fit: fit, width: width, height: height);
+    }
+  }
+
+  /// Internal helper to get the appropriate ImageProvider
+  ImageProvider _getProductImageProvider(String? base64String, {String? name}) {
+    if (base64String == null || base64String.isEmpty) {
+      return const AssetImage('assets/images/default_product.png');
+    }
+    return MemoryImage(base64Decode(base64String));
+  }
+
+  /// Internal helper to build fallback product image
+  Image _buildFallbackProductImage({
+    required BoxFit fit,
+    double? width,
+    double? height,
+  }) {
+    return Image.asset(
+      'assets/images/default_product.png',
+      fit: fit,
+      width: width,
+      height: height,
+    );
+  }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/constant/app_theme.dart';
-import 'package:game_gear/shared/service/auth_service.dart';
+import '../../shared/constant/app_theme.dart';
+import '../../shared/service/auth_service.dart';
 
 import '../../shared/model/user_model.dart';
 import '../../shared/service/database_service.dart';

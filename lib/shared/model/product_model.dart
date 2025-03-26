@@ -1,20 +1,20 @@
+// product_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
-  // You might want to add a unique id here, e.g.:
-  // final String id;
-  late final String name;
-  late final String description;
-  late final double price;
-  late final List<String> tags;
-  late final List<String>? imagesBase64;
-  late final String ownerUid;
-  late final DateTime createdAt;
-  late final double rate;
-  late final int quantity;
+  final String id; // Matches Firestore document ID
+  final String name;
+  final String description;
+  final double price;
+  final List<String> tags;
+  final List<String>? imagesBase64;
+  final String ownerUid;
+  final DateTime createdAt;
+  final double rate;
+  final int quantity;
 
   Product({
-    // required this.id,
+    required this.id,
     required this.name,
     required this.description,
     required this.price,
@@ -26,11 +26,12 @@ class Product {
     required this.quantity,
   });
 
-  factory Product.fromMap(Map<String, dynamic> data) {
+  factory Product.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     return Product(
-      // id: data['id'],
-      name: data['name'],
-      description: data['description'],
+      id: doc.id,
+      name: data['name'] ?? '',
+      description: data['description'] ?? '',
       price: (data['price'] as num).toDouble(),
       tags: List<String>.from(data['tags'] ?? []),
       imagesBase64: data['imagesBase64'] != null
@@ -39,13 +40,12 @@ class Product {
       ownerUid: data['ownerUid'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
-      quantity: data['quantity'],
+      quantity: data['quantity'] ?? 1,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      // 'id': id,
       'name': name,
       'description': description,
       'price': price,
@@ -60,16 +60,15 @@ class Product {
 
   @override
   String toString() {
-    return 'Product{name: $name, description: $description, price: $price, tags: $tags, imagesBase64: $imagesBase64, ownerUid: $ownerUid, createdAt: $createdAt, rate: $rate, quantity: $quantity}';
+    return 'Product{id: $id, name: $name, description: $description, price: $price, tags: $tags, imagesBase64: $imagesBase64, ownerUid: $ownerUid, createdAt: $createdAt, rate: $rate, quantity: $quantity}';
   }
 
-  // Override equality operator and hashCode.
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is Product && other.name == name && other.ownerUid == ownerUid;
+    return other is Product && other.id == id;
   }
 
   @override
-  int get hashCode => name.hashCode ^ ownerUid.hashCode;
+  int get hashCode => id.hashCode;
 }

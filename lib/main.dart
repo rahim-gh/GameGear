@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/constant/app_theme.dart';
+import 'shared/constant/app_theme.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 

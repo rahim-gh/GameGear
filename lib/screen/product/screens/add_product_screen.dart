@@ -2,16 +2,18 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/constant/app_theme.dart';
-import 'package:game_gear/shared/model/product_model.dart';
-import 'package:game_gear/shared/service/auth_service.dart';
-import 'package:game_gear/shared/service/database_service.dart';
-import 'package:game_gear/shared/utils/logger_util.dart';
-import 'package:game_gear/shared/widget/appbar_widget.dart';
-import 'package:game_gear/shared/widget/button_widget.dart';
-import 'package:game_gear/shared/widget/input_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../../shared/constant/app_theme.dart';
+import '../../../shared/model/product_model.dart';
+import '../../../shared/service/auth_service.dart';
+import '../../../shared/service/database_service.dart';
+import '../../../shared/utils/logger_util.dart';
+import '../../../shared/widget/appbar_widget.dart';
+import '../../../shared/widget/button_widget.dart';
+import '../../../shared/widget/input_widget.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -124,56 +126,31 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   /// Validates inputs, constructs a Product, adds it to Firestore, and logs any errors.
   Future<void> _addProduct() async {
-    if (_nameController.text.isEmpty ||
-        _priceController.text.isEmpty ||
-        _descriptionController.text.isEmpty ||
-        _imageFiles.isEmpty) {
-      logs("Validation failed: Some fields are empty or no image selected",
-          level: Level.warning);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('Please fill all fields and select at least one image')),
-      );
-      return;
-    }
+// In _addProduct method
+    // In _addProduct method:
+    final product = Product(
+      id: Uuid().v4(), // Generate new UUID
+      name: _nameController.text,
+      description: _descriptionController.text,
+      price: double.parse(_priceController.text),
+      tags: getTags(),
+      imagesBase64: await _convertImagesToBase64(),
+      ownerUid: AuthService().currentUser!.uid,
+      createdAt: DateTime.now(),
+      rate: 0.0,
+      quantity: quantity,
+    );
 
     try {
-      final double price = double.parse(_priceController.text);
-      final List<String> tags = getTags();
-      final List<String> imagesBase64 = await _convertImagesToBase64();
-
-      final product = Product(
-        name: _nameController.text,
-        description: _descriptionController.text,
-        price: price,
-        tags: tags,
-        imagesBase64: imagesBase64,
-        ownerUid: AuthService().currentUser!.uid,
-        createdAt: DateTime.now(),
-        rate: 0.0,
-        quantity: quantity,
-      );
-
-      logs('Product created: ${product.toString()}', level: Level.info);
-
-      // Add product to Firestore via DatabaseService.
-      final String productId = await DatabaseService().addProduct(product);
-      logs('Product added to Firestore with id: $productId', level: Level.info);
-
+      await DatabaseService().addProduct(product);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${product.name} added successfully')),
       );
-      logs("Product added successfully", level: Level.info);
-
-      // Optionally navigate back or update UI as needed.
-      // Navigator.of(context).pushReplacementNamed('home_screen');
-    } catch (e, stackTrace) {
-      logs('Error adding product: $e',
-          level: Level.error, error: e, stackTrace: stackTrace);
+      Navigator.of(context).pop();
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error adding product: $e')),
+        SnackBar(content: Text('Failed to add product: ${e.toString()}')),
       );
     }
   }

@@ -12,6 +12,8 @@ class InputFieldWidget extends StatefulWidget {
   final TextInputType keyboardType;
   final TextInputAction textInputAction;
   final bool requiredField;
+  final Widget? suffixIcon;
+  final Future<void> Function(dynamic value)? onChanged;
 
   const InputFieldWidget({
     super.key,
@@ -22,6 +24,8 @@ class InputFieldWidget extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.textInputAction = TextInputAction.next,
     this.requiredField = true,
+    this.suffixIcon,
+    this.onChanged,
   });
 
   @override
@@ -113,9 +117,10 @@ class _InputFieldWidgetState extends State<InputFieldWidget> {
                   });
                 },
               )
-            : null,
+            : widget.suffixIcon,
       ),
       validator: _validator,
+      onChanged: widget.onChanged,
     );
   }
 }

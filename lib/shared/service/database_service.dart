@@ -4,7 +4,6 @@ import 'package:logger/logger.dart';
 import '../model/product_model.dart';
 import '../model/user_model.dart';
 import '../utils/logger_util.dart';
-import 'auth_service.dart';
 
 /// Custom exception for database-related errors.
 class DatabaseException implements Exception {
@@ -21,10 +20,8 @@ class DatabaseService {
   factory DatabaseService() => _instance;
   DatabaseService._internal();
 
-  /// Verifies that Firestore is initialized.
   Future<void> initialize() async {
     try {
-      // Firebase.initializeApp() should be called elsewhere.
       logs('Firestore initialization verified.', level: Level.info);
     } catch (e) {
       logs('Firestore initialization error: $e', level: Level.error);
@@ -162,116 +159,100 @@ class DatabaseService {
   Future<String> addProduct(Product product) async {
     try {
       await initialize();
-      // Verify that the owner is a shop owner.
-      final User? owner = await getUser(product.ownerUid);
-      if (owner == null ||
-          !owner.isShopOwner ||
-          AuthService().currentUser?.uid != product.ownerUid) {
-        throw DatabaseException('User is not authorized to add products.');
+
+      final owner = await getUser(product.ownerUid);
+      if (owner == null || !owner.isShopOwner) {
+        throw DatabaseException('User is not authorized to add products');
       }
 
-      DocumentReference docRef = await _firestore.collection('products').add({
-        ...product.toMap(),
-        // Override createdAt with the current timestamp.
-        'createdAt': Timestamp.fromDate(DateTime.now()),
-      });
-
-      logs('Product added with id ${docRef.id} for owner ${product.ownerUid}.',
-          level: Level.info);
+      final docRef =
+          await _firestore.collection('products').add(product.toMap());
       return docRef.id;
     } catch (e) {
       logs('Error adding product: $e', level: Level.error);
       throw DatabaseException('Error adding product: $e');
     }
   }
-
   /// Updates an existing product document.
   /// Can only be executed by the shop owner who owns the product.
+// ... (previous code remains the same)
   Future<void> updateProduct(String productId, Product updatedProduct) async {
     try {
       await initialize();
-      // Verify that the user is a shop owner.
-      final User? owner = await getUser(updatedProduct.ownerUid);
-      if (owner == null ||
-          !owner.isShopOwner ||
-          AuthService().currentUser?.uid != updatedProduct.ownerUid) {
-        throw DatabaseException('User is not authorized to update products.');
+
+      final doc = await _firestore.collection('products').doc(productId).get();
+      if (!doc.exists) {
+        throw DatabaseException('Product not found');
       }
 
-      // Fetch existing product document.
-      final DocumentSnapshot doc =
-          await _firestore.collection('products').doc(productId).get();
-      if (!doc.exists) {
-        throw DatabaseException('Product not found.');
-      }
-      final Map<String, dynamic> existingData =
-          doc.data() as Map<String, dynamic>;
-      // Ensure that the ownerUid matches.
-      if (existingData['ownerUid'] != updatedProduct.ownerUid) {
-        throw DatabaseException('User is not the owner of this product.');
+      final existingProduct = Product.fromFirestore(doc);
+      if (existingProduct.ownerUid != updatedProduct.ownerUid) {
+        throw DatabaseException('User is not the owner of this product');
       }
 
       await _firestore
           .collection('products')
           .doc(productId)
           .update(updatedProduct.toMap());
-      logs('Product updated successfully for product id $productId.',
-          level: Level.info);
     } catch (e) {
       logs('Error updating product: $e', level: Level.error);
       throw DatabaseException('Error updating product: $e');
     }
   }
 
-  /// Deletes a product document.
-  /// Can only be executed by the shop owner who owns the product.
   Future<void> deleteProduct(String productId, String ownerUid) async {
     try {
       await initialize();
-      // Verify that the user is a shop owner.
-      final User? owner = await getUser(ownerUid);
-      if (owner == null ||
-          !owner.isShopOwner ||
-          AuthService().currentUser?.uid != ownerUid) {
-        throw DatabaseException('User is not authorized to delete products.');
+      logs('Attempting to delete product $productId for owner $ownerUid',
+          level: Level.debug);
+
+      final doc = await _firestore.collection('products').doc(productId).get();
+
+      if (!doc.exists) {
+        logs('Product not found', level: Level.warning);
+        throw DatabaseException('Product not found');
       }
 
-      // Fetch product document.
-      final DocumentSnapshot doc =
-          await _firestore.collection('products').doc(productId).get();
-      if (!doc.exists) {
-        throw DatabaseException('Product not found.');
-      }
-      final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      if (data['ownerUid'] != ownerUid) {
-        throw DatabaseException('User is not the owner of this product.');
+      final product = Product.fromFirestore(doc);
+      if (product.ownerUid != ownerUid) {
+        logs('Ownership mismatch', level: Level.warning);
+        throw DatabaseException(
+            'User is not authorized to delete this product');
       }
 
       await _firestore.collection('products').doc(productId).delete();
-      logs('Product deleted successfully for product id $productId.',
-          level: Level.info);
+      logs('Product deleted successfully', level: Level.info);
+    } on FirebaseException catch (e) {
+      logs('Firestore error deleting product: ${e.code} - ${e.message}',
+          level: Level.error);
+      throw DatabaseException('Failed to delete product: ${e.message}');
     } catch (e) {
-      logs('Error deleting product: $e', level: Level.error);
-      throw DatabaseException('Error deleting product: $e');
+      logs('Unexpected error deleting product: $e', level: Level.error);
+      throw DatabaseException('Failed to delete product');
     }
   }
 
-  /// Retrieves all product documents.
   Future<List<Product>> getAllProducts() async {
     try {
       await initialize();
-      final QuerySnapshot querySnapshot =
-          await _firestore.collection('products').get();
-      final List<Product> products = querySnapshot.docs.map((doc) {
-        final product = Product.fromMap(doc.data() as Map<String, dynamic>);
-        logs('Retrieved product with id ${doc.id}', level: Level.info);
-        return product;
-      }).toList();
-      logs('Retrieved ${products.length} products.', level: Level.info);
-      return products;
+      final querySnapshot = await _firestore.collection('products').get();
+      return querySnapshot.docs
+          .map((doc) => Product.fromFirestore(doc))
+          .toList();
     } catch (e) {
       logs('Error retrieving products: $e', level: Level.error);
       throw DatabaseException('Error retrieving products: $e');
+    }
+  }
+
+  Future<Product?> getProduct(String productId) async {
+    try {
+      await initialize();
+      final doc = await _firestore.collection('products').doc(productId).get();
+      return doc.exists ? Product.fromFirestore(doc) : null;
+    } catch (e) {
+      logs('Error getting product: $e', level: Level.error);
+      throw DatabaseException('Error getting product: $e');
     }
   }
 }

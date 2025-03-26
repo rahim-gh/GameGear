@@ -24,7 +24,7 @@ class BasketProductWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProductScreen(product: product);
+          return ProductScreen(productId: product.id);
         }));
       },
       child: Container(

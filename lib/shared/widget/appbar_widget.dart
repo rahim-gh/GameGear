@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:game_gear/shared/constant/app_theme.dart';
+
+import '../constant/app_theme.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   @override
