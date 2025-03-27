@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/screen/authentication/login_screen.dart';
+import 'package:game_gear/shared/widget/button_widget.dart';
 import '../../shared/constant/app_theme.dart';
 import '../../shared/service/auth_service.dart';
-
 import '../../shared/model/user_model.dart';
 import '../../shared/service/database_service.dart';
 import '../../shared/widget/navbar_widget.dart';
 import '../basket/basket_screen.dart';
 import '../home/home_screen.dart';
-import '../product/screens/add_product_screen.dart';
+import '../product/screens/product_form_screen.dart';
 import '../profile/profile_screen.dart';
 import '../search/search_screen.dart';
 import 'logic/nav_bar_visibility_controller.dart';
@@ -35,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
       return [
         const HomeScreen(), // Shop owner's own products.
         const SearchScreen(), // Search his own products.
-        const AddProductScreen(), // Add new product.
+        const ProductFormScreen(), // Add new product.
         const ProfileScreen(), // Profile.
       ];
     } else {
@@ -70,50 +71,75 @@ class _MainScreenState extends State<MainScreen> {
           return Scaffold(
             backgroundColor: AppTheme.primaryColor,
             body: const Center(child: CircularProgressIndicator()),
-            bottomNavigationBar: const SizedBox.shrink(),
           );
         }
         if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
           return Scaffold(
             backgroundColor: AppTheme.primaryColor,
-            body: const Center(
-              child: Text(
-                'Error loading user data',
+            body: const Center(child: Text('Error loading user data')),
+            // Logout button at bottom remains unchanged.
+            bottomNavigationBar: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ButtonWidget(
+                label: 'Logout',
+                onPressed: () async {
+                  await AuthService().signOut(context);
+                  if (!mounted) return;
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                  );
+                },
               ),
             ),
-            bottomNavigationBar: const SizedBox.shrink(),
           );
         }
+
         final user = snapshot.data!;
         final widgetOptions = _buildWidgetOptions(user);
 
         return Scaffold(
           backgroundColor: AppTheme.primaryColor,
-          body: NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              if (notification is ScrollUpdateNotification) {
-                _navBarController.onScroll(notification.metrics.pixels);
-              }
-              return false;
-            },
-            child: widgetOptions[_selectedIndex],
-          ),
-          bottomNavigationBar: AnimatedBuilder(
-            animation: _navBarController,
-            builder: (context, child) {
-              return AnimatedSlide(
-                duration: const Duration(milliseconds: 100),
-                offset: _navBarController.isVisible
-                    ? Offset.zero
-                    : const Offset(0, 1),
-                child: child,
-              );
-            },
-            child: NavBarWidget(
-              selectedIndex: _selectedIndex,
-              onItemTapped: _onItemTapped,
-              user: user,
-            ),
+          body: Stack(
+            children: [
+              // Main content fills the screen.
+              Positioned.fill(
+                top: 0, // Leave space for navbar height.
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (notification) {
+                    if (notification is ScrollUpdateNotification) {
+                      _navBarController.onScroll(notification.metrics.pixels);
+                    }
+                    return false;
+                  },
+                  child: widgetOptions[_selectedIndex],
+                ),
+              ),
+              // Navbar overlay at top.
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: AnimatedBuilder(
+                  animation: _navBarController,
+                  builder: (context, child) {
+                    return AnimatedSlide(
+                      duration: const Duration(milliseconds: 100),
+                      // Slide upward when hidden.
+                      offset: _navBarController.isVisible
+                          ? Offset.zero
+                          : const Offset(0, 1),
+                      child: child,
+                    );
+                  },
+                  child: NavBarWidget(
+                    selectedIndex: _selectedIndex,
+                    onItemTapped: _onItemTapped,
+                    user: user,
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },

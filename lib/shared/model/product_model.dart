@@ -2,7 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
-  final String id; // Matches Firestore document ID
+  final String id;
   final String name;
   final String description;
   final double price;

@@ -52,7 +52,7 @@ class NavBarWidget extends StatelessWidget {
           backgroundColor: AppTheme.accentColor,
         ),
         const BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart),
+          icon: Icon(Icons.shopping_basket),
           label: 'Basket',
           backgroundColor: AppTheme.accentColor,
         ),
@@ -68,7 +68,10 @@ class NavBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 8,
+      ),
       decoration: BoxDecoration(
         color: AppTheme.accentColor,
         borderRadius: BorderRadius.circular(20),

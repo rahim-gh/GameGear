@@ -140,7 +140,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   InputFieldWidget(
                     controller: fullNameController,
                     label: 'Fullname',
-                    type: 'name',
+                    type: FieldType.userName,
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.name,
                   ),
@@ -148,7 +148,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   InputFieldWidget(
                     controller: emailController,
                     label: 'Email',
-                    type: 'email',
+                    type: FieldType.email,
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.emailAddress,
                   ),
@@ -156,7 +156,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   InputFieldWidget(
                     controller: passwordController,
                     label: 'Password',
-                    type: 'password',
+                    type: FieldType.password,
                     obscure: true,
                     keyboardType: TextInputType.visiblePassword,
                     textInputAction: TextInputAction.next,
@@ -165,7 +165,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   InputFieldWidget(
                     controller: confirmPasswordController,
                     label: 'Confirm Password',
-                    type: 'password',
+                    type: FieldType.password,
                     obscure: true,
                     keyboardType: TextInputType.visiblePassword,
                     textInputAction: TextInputAction.done,

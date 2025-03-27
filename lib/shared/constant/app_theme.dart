@@ -7,6 +7,7 @@ class AppTheme {
 
   // example: Text hint
   static const Color greyShadeColor = Colors.grey;
+
   static const TextStyle titleStyle = TextStyle(
     overflow: TextOverflow.ellipsis,
     color: AppTheme.accentColor,
