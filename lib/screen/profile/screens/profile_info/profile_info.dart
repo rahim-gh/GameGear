@@ -117,7 +117,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
                 message: "Email updated. Please sign in again.",
               );
               await AuthService().signOut(context);
-              return; // End further processing as user is signed out.
+              return;
             } else {
               logs(
                 'Email verification timed out. Please verify your new email and try again.',
@@ -145,7 +145,7 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
         final imageToSave = _profileImageBase64 ?? _user?.imageBase64;
 
         logs('Updating Firestore for user info...', level: Level.debug);
-        final uid = currentUser!.uid;
+        final uid = AuthService().currentUser!.uid;
         await DatabaseService().updateUser(
           uid,
           _fullNameController.text,
@@ -159,7 +159,6 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
           message: "Profile updated successfully",
         );
       } on FirebaseAuthException catch (e, stacktrace) {
-        // If the token is expired, force sign-out.
         if (e.code == 'user-token-expired') {
           logs('User token expired. Forcing sign out.', level: Level.error);
           await AuthService().signOut(context);
@@ -245,26 +244,28 @@ class _ProfileInfoScreenState extends State<ProfileInfoScreen> {
                     InputFieldWidget(
                       label: 'Full Name',
                       controller: _fullNameController,
-                      type: 'name',
+                      type: FieldType.userName,
                     ),
                     const SizedBox(height: 16),
                     InputFieldWidget(
                       label: 'Email',
                       controller: _emailController,
-                      type: 'email',
+                      type: FieldType.email,
                     ),
                     const SizedBox(height: 16),
                     InputFieldWidget(
                       label: 'Current Password',
                       controller: _currentPasswordController,
-                      type: 'password',
+                      type: FieldType.password,
+                      obscure: true,
                     ),
                     const SizedBox(height: 16),
                     InputFieldWidget(
                       label: 'New Password (optional)',
                       controller: _newPasswordController,
-                      type: 'password',
+                      type: FieldType.password,
                       requiredField: false,
+                      obscure: true,
                     ),
                     const SizedBox(height: 20),
                     ButtonWidget(

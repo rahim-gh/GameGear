@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   InputFieldWidget(
                     controller: emailController,
                     label: 'Email',
-                    type: 'email',
+                    type: FieldType.email,
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.emailAddress,
                   ),
@@ -118,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   InputFieldWidget(
                     controller: passwordController,
                     label: 'Password',
-                    type: 'password',
+                    type: FieldType.password,
                     obscure: true,
                     keyboardType: TextInputType.visiblePassword,
                     textInputAction: TextInputAction.done,

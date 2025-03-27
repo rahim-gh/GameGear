@@ -1,120 +1,98 @@
-// basket_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:game_gear/shared/model/product_model.dart';
+import 'package:game_gear/shared/model/basket_model.dart';
+import 'package:game_gear/shared/constant/app_theme.dart';
+import 'package:game_gear/shared/widget/appbar_widget.dart';
+import 'package:game_gear/shared/widget/basket_product_widget.dart';
+import 'package:game_gear/shared/widget/snackbar_widget.dart';
 
-import '../../shared/constant/app_theme.dart';
-import '../../shared/model/basket_model.dart';
-import '../../shared/widget/appbar_widget.dart';
-import '../../shared/widget/basket_product_widget.dart';
-
-class BasketScreen extends StatefulWidget {
+class BasketScreen extends StatelessWidget {
   const BasketScreen({super.key});
 
   @override
-  State<BasketScreen> createState() => _BasketScreenState();
-}
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.primaryColor,
+      appBar: const AppBarWidget(title: "Basket"),
+      body: Consumer<BasketModel>(
+        builder: (context, basketModel, _) {
+          return Column(
+            children: [
+              _buildTotalSection(context, basketModel),
+              Expanded(child: _buildProductList(context, basketModel)),
+            ],
+          );
+        },
+      ),
+    );
+  }
 
-class _BasketScreenState extends State<BasketScreen> {
-  /// Prompts the user for the quantity to remove.
-  Future<int?> _askQuantityToRemove(
-      BuildContext context, int currentQuantity) async {
-    final TextEditingController removalController = TextEditingController();
-    return await showDialog<int>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Remove Product"),
-          content: TextField(
-            controller: removalController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: "Enter quantity to remove (max: $currentQuantity)",
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(), // Cancel
-              child: const Text("Cancel"),
+  Widget _buildTotalSection(BuildContext context, BasketModel basketModel) {
+    return Material(
+      elevation: 4,
+      color: AppTheme.primaryColor,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        width: double.infinity,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Total: \$${basketModel.totalPrice.toStringAsFixed(2)}',
+              style: TextStyle(
+                color: AppTheme.accentColor,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             ElevatedButton(
-              onPressed: () {
-                final removal = int.tryParse(removalController.text);
-                Navigator.of(context).pop(removal);
-              },
-              child: const Text("Remove"),
+              style: AppTheme.buttonStyle,
+              onPressed: () => _handlePurchase(context, basketModel),
+              child: const Text('Buy'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductList(BuildContext context, BasketModel basketModel) {
+    final products =
+        basketModel.products.entries.where((e) => e.value > 0).toList();
+
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: products.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (context, index) {
+        final entry = products[index];
+        return BasketProductWidget(
+          product: entry.key,
+          quantity: entry.value,
+          onDecrement: () => basketModel.removeProductQuantity(entry.key, 1),
+          onIncrement: () => basketModel.addProduct(entry.key, quantity: 1),
+          onRemoveAll: () {
+            basketModel.removeProduct(entry.key);
+            SnackbarWidget.show(
+              context: context,
+              message: '${entry.key.name} removed',
+              actionLabel: 'Undo',
+              onActionPressed: () =>
+                  basketModel.addProduct(entry.key, quantity: entry.value),
+            );
+          },
         );
       },
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final basketModel = Provider.of<BasketModel>(context);
-    final productsMap = basketModel.products;
-
-    return Scaffold(
-      backgroundColor: AppTheme.primaryColor,
-      appBar: AppBarWidget(title: "Basket"),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              borderRadius: BorderRadius.circular(20),
-              color: AppTheme.primaryColor,
-            ),
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Total: \$${basketModel.totalPrice.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    overflow: TextOverflow.ellipsis,
-                    color: AppTheme.accentColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                ElevatedButton(
-                  style: AppTheme.buttonStyle,
-                  onPressed: () {
-                    // Implement buy logic here
-                  },
-                  child: const Text('Buy'),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: productsMap.length,
-              itemBuilder: (context, index) {
-                final product = productsMap.keys.elementAt(index);
-                final quantity = productsMap[product] ?? 0;
-                if (quantity == 0) return const SizedBox.shrink();
-
-                return BasketProductWidget(
-                  product: product,
-                  quantity: quantity,
-                  onRemove: () async {
-                    final removalQuantity =
-                        await _askQuantityToRemove(context, quantity);
-                    if (removalQuantity != null && removalQuantity > 0) {
-                      basketModel.removeProductQuantity(
-                          product, removalQuantity);
-                    }
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+  void _handlePurchase(BuildContext context, BasketModel basketModel) {
+    if (basketModel.products.isEmpty) return;
+    basketModel.clearBasket();
+    SnackbarWidget.show(
+      context: context,
+      message: 'Purchase completed successfully!',
     );
   }
 }

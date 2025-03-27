@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:logger/logger.dart';
 
 import '../model/product_model.dart';
@@ -77,8 +78,30 @@ class DatabaseService {
         logs('User with uid $uid retrieved successfully.', level: Level.info);
         return User.fromMap(doc.data() as Map<String, dynamic>);
       } else {
-        logs('User with uid $uid not found.', level: Level.warning);
-        return null;
+        logs('User with uid $uid not found. Recreating user document.',
+            level: Level.warning);
+        // Retrieve current Firebase Auth user details
+        final fbUser = firebase_auth.FirebaseAuth.instance.currentUser;
+        if (fbUser == null) {
+          logs(
+              'Firebase Auth user not found. Cannot recreate Firestore document.',
+              level: Level.error);
+          return null;
+        }
+        // Leverage the displayName, or default to 'unknown'
+        final fullName = fbUser.displayName?.toLowerCase().trim() ?? 'unknown';
+        // Customize shop owner flag as needed; using false as default here.
+        final bool isShopOwner = false;
+        final User newUser = User(
+          fullName: fullName,
+          isShopOwner: isShopOwner,
+          imageBase64: null,
+          createdAt: DateTime.now(),
+          description: null,
+        );
+        await _firestore.collection('users').doc(uid).set(newUser.toMap());
+        logs('User with uid $uid re-created successfully.', level: Level.info);
+        return newUser;
       }
     } catch (e) {
       logs('Error retrieving user with uid $uid: $e', level: Level.error);
@@ -160,6 +183,11 @@ class DatabaseService {
     try {
       await initialize();
 
+      // Enforce that the product has at least one image.
+      if (product.imagesBase64 == null || product.imagesBase64!.isEmpty) {
+        throw DatabaseException('Product must have at least one image');
+      }
+
       final owner = await getUser(product.ownerUid);
       if (owner == null || !owner.isShopOwner) {
         throw DatabaseException('User is not authorized to add products');
@@ -173,12 +201,18 @@ class DatabaseService {
       throw DatabaseException('Error adding product: $e');
     }
   }
+
   /// Updates an existing product document.
   /// Can only be executed by the shop owner who owns the product.
-// ... (previous code remains the same)
   Future<void> updateProduct(String productId, Product updatedProduct) async {
     try {
       await initialize();
+
+      // Enforce that the updated product has at least one image.
+      if (updatedProduct.imagesBase64 == null ||
+          updatedProduct.imagesBase64!.isEmpty) {
+        throw DatabaseException('Product must have at least one image');
+      }
 
       final doc = await _firestore.collection('products').doc(productId).get();
       if (!doc.exists) {

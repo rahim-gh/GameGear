@@ -6,10 +6,6 @@ import '../utils/logger_util.dart';
 
 class SnackbarWidget {
   /// Displays a standardized snackbar message.
-  ///
-  /// The [context] is used to display the snackbar, and the [message] defines
-  /// the content. Optional parameters allow for customization of duration,
-  /// background color, and an action button.
   static void show({
     required BuildContext context,
     required String message,
@@ -20,18 +16,29 @@ class SnackbarWidget {
   }) {
     try {
       final snackBar = SnackBar(
-        content: Text(message),
+        content: Text(
+          message,
+          style: const TextStyle(color: AppTheme.primaryColor),
+        ),
         duration: duration,
         backgroundColor: backgroundColor,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(
+            bottom: 80, left: 16, right: 16), // Position above navbar
+        shape: RoundedRectangleBorder(
+          side: const BorderSide(color: Colors.black),
+          borderRadius: BorderRadius.circular(8),
+        ),
         action: (actionLabel != null && onActionPressed != null)
             ? SnackBarAction(
                 label: actionLabel,
+                textColor: AppTheme.primaryColor,
                 onPressed: onActionPressed,
               )
             : null,
       );
 
-      // Clear existing snackbars to maintain a clean user interface.
+      // Clear any existing snackbars to maintain a clean interface.
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       logs('Snackbar displayed with message: $message', level: Level.info);

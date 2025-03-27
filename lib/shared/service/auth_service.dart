@@ -10,16 +10,11 @@ class AuthService {
 
   User? get currentUser {
     try {
-      logs('Fetching current user...', level: Level.debug);
-      final user = _auth.currentUser;
-      if (user != null) {
-        logs('Current user retrieved with UID: ${user.uid}', level: Level.info);
-      } else {
-        logs('No current user found', level: Level.info);
-      }
-      return user;
-    } catch (e) {
-      logs('Error while retrieving current user: $e', level: Level.error);
+      logs('Current user access attempt', level: Level.debug);
+      return _auth.currentUser;
+    } catch (e, stackTrace) {
+      logs('Current user access error: $e',
+          level: Level.error, stackTrace: stackTrace);
       return null;
     }
   }

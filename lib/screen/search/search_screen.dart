@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/shared/widget/snackbar_widget.dart';
 
 import '../../shared/constant/app_theme.dart';
 import '../../shared/model/product_model.dart';
@@ -46,8 +47,9 @@ class _SearchScreenState extends State<SearchScreen> {
       _allProducts = await databaseService.getAllProducts();
       _extractAvailableTags();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading products: ${e.toString()}')),
+      SnackbarWidget.show(
+        context: context,
+        message: 'Error loading products: ${e.toString()}',
       );
     }
   }
@@ -213,7 +215,7 @@ class _SearchScreenState extends State<SearchScreen> {
             InputFieldWidget(
               label: 'Search',
               controller: _searchController,
-              type: 'normal',
+              type: FieldType.normal,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.search,
               suffixIcon: const Icon(Icons.search),
