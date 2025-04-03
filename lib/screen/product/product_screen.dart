@@ -135,7 +135,9 @@ class _ProductScreenState extends State<ProductScreen> {
         color: AppTheme.primaryColor,
         border: Border.all(color: AppTheme.greyShadeColor, width: 0.5),
         borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),

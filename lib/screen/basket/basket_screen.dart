@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:game_gear/shared/model/product_model.dart';
 import 'package:game_gear/shared/model/basket_model.dart';
 import 'package:game_gear/shared/constant/app_theme.dart';
 import 'package:game_gear/shared/widget/appbar_widget.dart';
