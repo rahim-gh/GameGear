@@ -72,7 +72,7 @@ flutter:
   assets:
     - assets/images/
     - assets/default/
-  #   - images/a_dot_ham.jpeg
+    - assets/default/logo/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

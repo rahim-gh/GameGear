@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppAsset {
-  static final String logo = 'assets/images/logo.png';
+  static final String logo = 'assets/default/logo/no-bg.png';
   static final List products = [
     {
       'name': 'Black Wireless RGB Gaming Mouse',
