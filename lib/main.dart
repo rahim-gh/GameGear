@@ -1,7 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:game_gear/screen/payment/service/payment_service.dart';
-import 'package:game_gear/shared/model/payment_model.dart';
 import 'shared/constant/app_theme.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +24,6 @@ void main() async {
     options: DefaultFirebaseOptions.android,
   );
 
-  await PaymentService().initialize();
 
   logs('App starting...', level: Level.info);
   runApp(
@@ -42,7 +39,6 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => BasketModel()),
-        ChangeNotifierProvider(create: (_) => PaymentManager()),
       ],
       child: MaterialApp(
         color: AppTheme.primaryColor,
