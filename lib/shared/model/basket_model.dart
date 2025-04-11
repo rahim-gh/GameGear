@@ -20,7 +20,7 @@ class BasketModel extends ChangeNotifier {
 
       _products.update(
         product,
-        (value) => (product.quantity >= value + quantity) ? value + quantity : value,
+        (value) => value + quantity,
         ifAbsent: () => quantity,
       );
       notifyListeners();
