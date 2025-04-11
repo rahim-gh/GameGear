@@ -53,8 +53,10 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   void _incrementQuantity() {
-    setState(() => quantity++);
-    logs("Quantity increased to $quantity", level: Level.debug);
+    if (quantity <_product!.quantity ) {
+  setState(() => quantity++);
+  logs("Quantity increased to $quantity", level: Level.debug);
+}
   }
 
   void _addToBasket(BasketModel basketModel) {
@@ -93,7 +95,7 @@ class _ProductScreenState extends State<ProductScreen> {
                   product.imagesBase64?[index],
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.width * 0.7,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                 ),
               );
             },
@@ -153,30 +155,39 @@ class _ProductScreenState extends State<ProductScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                MaterialButton(
+            _product!.quantity == 0
+              ? Text(
+                'Product out of stock',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                )
+              : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MaterialButton(
                   color: quantity > 1
-                      ? AppTheme.accentColor
-                      : AppTheme.greyShadeColor,
+                    ? AppTheme.accentColor
+                    : AppTheme.greyShadeColor,
                   shape: const CircleBorder(),
                   onPressed: _decrementQuantity,
                   child: Icon(Icons.remove, color: AppTheme.primaryColor),
-                ),
-                Padding(
+                  ),
+                  Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child:
-                      Text('$quantity', style: const TextStyle(fontSize: 18)),
-                ),
-                MaterialButton(
+                  child: Text('$quantity',
+                    style: const TextStyle(fontSize: 18)),
+                  ),
+                  MaterialButton(
                   color: AppTheme.accentColor,
                   shape: const CircleBorder(),
                   onPressed: _incrementQuantity,
                   child: Icon(Icons.add, color: AppTheme.primaryColor),
+                  ),
+                ],
                 ),
-              ],
-            ),
             const SizedBox(height: 15),
             Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
