@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:game_gear/screen/payment/service/payment_service.dart';
+import 'package:game_gear/shared/model/payment_model.dart';
 import 'shared/constant/app_theme.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -21,16 +23,14 @@ void main() async {
 
   logs('Initialize the Firebase', level: Level.info);
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.android,
   );
+
+  await PaymentService().initialize();
 
   logs('App starting...', level: Level.info);
   runApp(
-    ChangeNotifierProvider(
-      // Wrap the app with ChangeNotifierProvider
-      create: (context) => BasketModel(), // Provide the BasketModel
-      child: const MyApp(),
-    ),
+    const MyApp(),
   );
 }
 
@@ -39,20 +39,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      color: AppTheme.primaryColor,
-      debugShowCheckedModeBanner: false,
-      // home: const LoginScreen(),
-      routes: {
-        '/': (context) => const DirectionScreen(),
-        'signup_screen': (context) => const SignupScreen(),
-        'login_screen': (context) => const LoginScreen(),
-        'main_screen': (context) => const MainScreen(),
-        'home_screen': (context) => const HomeScreen(),
-        'search_screen': (context) => const SearchScreen(),
-        'basket_screen': (context) => const BasketScreen(),
-        'profile_screen': (context) => const ProfileScreen(),
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => BasketModel()),
+        ChangeNotifierProvider(create: (_) => PaymentManager()),
+      ],
+      child: MaterialApp(
+        color: AppTheme.primaryColor,
+        debugShowCheckedModeBanner: false,
+        // home: const LoginScreen(),
+        routes: {
+          '/': (context) => const DirectionScreen(),
+          'signup_screen': (context) => const SignupScreen(),
+          'login_screen': (context) => const LoginScreen(),
+          'main_screen': (context) => const MainScreen(),
+          'home_screen': (context) => const HomeScreen(),
+          'search_screen': (context) => const SearchScreen(),
+          'basket_screen': (context) => const BasketScreen(),
+          'profile_screen': (context) => const ProfileScreen(),
+        },
+      ),
     );
   }
 }

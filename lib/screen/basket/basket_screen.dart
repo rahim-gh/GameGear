@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/screen/payment/payment_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:game_gear/shared/model/basket_model.dart';
 import 'package:game_gear/shared/constant/app_theme.dart';
@@ -47,8 +48,15 @@ class BasketScreen extends StatelessWidget {
             ),
             ElevatedButton(
               style: AppTheme.buttonStyle,
-              onPressed: () => _handlePurchase(context, basketModel),
-              child: const Text('Buy'),
+              onPressed: () => _handleClear(context, basketModel),
+              child: const Text('Clear All'),
+            ),
+            ElevatedButton(
+              style: AppTheme.buttonStyle,
+              onPressed: basketModel.products.isEmpty
+                  ? null
+                  : () => _handleCheckout(context, basketModel),
+              child: const Text('Checkout'),
             ),
           ],
         ),
@@ -86,12 +94,18 @@ class BasketScreen extends StatelessWidget {
     );
   }
 
-  void _handlePurchase(BuildContext context, BasketModel basketModel) {
+  void _handleCheckout(BuildContext context, BasketModel basketModel) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const PaymentScreen()),
+    );
+  }
+
+  void _handleClear(BuildContext context, BasketModel basketModel) {
     if (basketModel.products.isEmpty) return;
     basketModel.clearBasket();
     SnackbarWidget.show(
       context: context,
-      message: 'Purchase completed successfully!',
+      message: 'The basket cleared',
     );
   }
 }
