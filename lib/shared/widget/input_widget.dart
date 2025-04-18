@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 
 import '../constant/app_theme.dart';
@@ -24,6 +25,10 @@ class InputFieldWidget extends StatefulWidget {
   final TextInputAction textInputAction;
   final bool requiredField;
   final Widget? suffixIcon;
+  final Widget? prefixIcon;
+  final String? hintText;
+  final List<TextInputFormatter>? inputFormatters;
+  final TextCapitalization textCapitalization;
   final Future<void> Function(dynamic value)? onChanged;
 
   const InputFieldWidget({
@@ -36,6 +41,10 @@ class InputFieldWidget extends StatefulWidget {
     this.textInputAction = TextInputAction.next,
     this.requiredField = true,
     this.suffixIcon,
+    this.prefixIcon,
+    this.hintText,
+    this.inputFormatters,
+    this.textCapitalization = TextCapitalization.none,
     this.onChanged,
   });
 
@@ -142,10 +151,13 @@ class _InputFieldWidgetState extends State<InputFieldWidget> {
       obscureText: widget.type == FieldType.password ? _obscure : false,
       keyboardType: widget.keyboardType,
       textInputAction: widget.textInputAction,
+      textCapitalization: widget.textCapitalization,
+      inputFormatters: widget.inputFormatters,
       decoration: InputDecoration(
         labelText: widget.label,
         filled: true,
         fillColor: Colors.white,
+        hintText: widget.hintText,
         hintStyle: TextStyle(color: AppTheme.greyShadeColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -153,6 +165,7 @@ class _InputFieldWidgetState extends State<InputFieldWidget> {
         contentPadding:
             const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         errorMaxLines: 2,
+        prefixIcon: widget.prefixIcon,
         suffixIcon: widget.type == FieldType.password
             ? IconButton(
                 icon: Icon(

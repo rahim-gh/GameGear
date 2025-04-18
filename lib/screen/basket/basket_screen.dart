@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:game_gear/screen/payment/payment_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:game_gear/shared/model/basket_model.dart';
 import 'package:game_gear/shared/constant/app_theme.dart';
@@ -92,11 +93,24 @@ class BasketScreen extends StatelessWidget {
   }
 
   void _handlePurchase(BuildContext context, BasketModel basketModel) {
-    if (basketModel.products.isEmpty) return;
-    basketModel.clearBasket();
+    if (basketModel.products.isEmpty) {
+      SnackbarWidget.show(
+        context: context,
+        message: 'The basket is empty',
+      );
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const PaymentScreen(),
+      ),
+    );
+    // Note: Moving clearBasket to the payment screen after successful payment
+    // instead of clearing here to preserve the basket until payment is confirmed
     SnackbarWidget.show(
       context: context,
-      message: 'Purchase completed successfully!',
+      message: 'Proceeding to payment',
     );
   }
 
