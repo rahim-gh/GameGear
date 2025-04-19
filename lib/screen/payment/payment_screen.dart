@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:game_gear/shared/constant/app_theme.dart';
+import 'package:game_gear/shared/model/basket_model.dart';
 import 'package:game_gear/shared/widget/input_widget.dart';
 import 'package:game_gear/shared/widget/snackbar_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:game_gear/shared/model/basket_model.dart';
 
 import '../../shared/widget/appbar_widget.dart';
 
@@ -45,7 +45,47 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     // Valid until validation (MM/YY format)
     final validUntil = _validUntilController.text;
-    if (validUntil.length != 5 || !validUntil.contains('/')) {
+    if (validUntil.length != 5 || validUntil[2] != '/') {
+      SnackbarWidget.show(
+        context: context,
+        message: 'Please enter a valid expiration date (MM/YY)',
+      );
+      return false;
+    }
+
+    try {
+      // Extract month and year
+      final parts = validUntil.split('/');
+      if (parts.length != 2) {
+        throw FormatException('Invalid date format');
+      }
+
+      final month = int.parse(parts[0]);
+      final year = int.parse(parts[1]) + 2000; // Convert YY to 20YY
+
+      // Validate month (1-12)
+      if (month < 1 || month > 12) {
+        SnackbarWidget.show(
+          context: context,
+          message: 'Please enter a valid month (01-12)',
+        );
+        return false;
+      }
+
+      // Get current date
+      final now = DateTime.now();
+      final currentYear = now.year;
+      final currentMonth = now.month;
+
+      // Check if card is expired
+      if (year < currentYear || (year == currentYear && month < currentMonth)) {
+        SnackbarWidget.show(
+          context: context,
+          message: 'Card has expired',
+        );
+        return false;
+      }
+    } catch (e) {
       SnackbarWidget.show(
         context: context,
         message: 'Please enter a valid expiration date (MM/YY)',
@@ -392,28 +432,75 @@ class _CardNumberFormatter extends TextInputFormatter {
   }
 }
 
-// Custom text input formatter for MM/YY expiry date
+// Improved text input formatter for MM/YY expiry date
 class _ExpiryDateFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final newText = newValue.text;
+    var newText = newValue.text.replaceAll('/', '');
+    final oldText = oldValue.text.replaceAll('/', '');
 
-    if (newText.isEmpty) {
-      return newValue;
+    // Handle deletion
+    if (newText.length < oldText.length) {
+      // If deleting the slash, also delete the character before it
+      if (oldValue.text.contains('/') &&
+          oldValue.selection.baseOffset == 3 &&
+          newValue.selection.baseOffset == 2) {
+        newText = newText.substring(0, 1);
+        return TextEditingValue(
+          text: newText,
+          selection: TextSelection.collapsed(offset: newText.length),
+        );
+      }
+
+      // Return with proper formatting for remaining text
+      if (newText.length <= 2) {
+        return TextEditingValue(
+          text: newText,
+          selection: TextSelection.collapsed(offset: newText.length),
+        );
+      } else {
+        return TextEditingValue(
+          text: '${newText.substring(0, 2)}/${newText.substring(2)}',
+          selection: TextSelection.collapsed(offset: newText.length + 1),
+        );
+      }
     }
 
-    if (newText.length > 2 && !newText.contains('/')) {
-      final firstPart = newText.substring(0, 2);
-      final secondPart = newText.substring(2);
+    // Limit to 4 digits
+    if (newText.length > 4) {
+      newText = newText.substring(0, 4);
+    }
+
+    // Format with slash
+    if (newText.length > 2) {
+      final month = newText.substring(0, 2);
+      final year = newText.substring(2);
+
+      // Try to validate month (1-12)
+      try {
+        final monthNum = int.parse(month);
+        if (monthNum < 1) {
+          newText = '01${newText.substring(2)}';
+        } else if (monthNum > 12) {
+          newText = '12${newText.substring(2)}';
+        }
+      } catch (_) {
+        // If month isn't a valid number, leave as is
+      }
+
       return TextEditingValue(
-        text: '$firstPart/$secondPart',
-        selection: TextSelection.collapsed(offset: newText.length + 1),
+        text: '$month/$year',
+        selection:
+            TextSelection.collapsed(offset: month.length + year.length + 1),
       );
     }
 
-    return newValue;
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
   }
 }

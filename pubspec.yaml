@@ -43,8 +43,9 @@ dependencies:
   provider: ^6.1.2
   uuid: ^4.5.1
   shimmer: ^3.0.0
-  flutter_stripe: ^11.4.0
+  flutter_stripe: ^11.5.0
   pull_to_refresh: ^2.0.0
+  stripe_sdk: ^5.0.0
 
 dev_dependencies:
   flutter_test:
