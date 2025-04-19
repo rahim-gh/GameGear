@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'shared/constant/app_theme.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -11,9 +12,11 @@ import 'screen/basket/basket_screen.dart';
 import 'screen/direction/direction_screen.dart';
 import 'screen/home/home_screen.dart';
 import 'screen/main/main_screen.dart';
+import 'screen/payment/payment_screen.dart';
 import 'screen/profile/profile_screen.dart';
 import 'screen/search/search_screen.dart';
 import 'shared/model/basket_model.dart';
+import 'shared/service/stripe_service.dart';
 import 'shared/utils/logger_util.dart';
 
 void main() async {
@@ -24,6 +27,9 @@ void main() async {
     options: DefaultFirebaseOptions.android,
   );
 
+  // Initialize Stripe
+  logs('Initializing Stripe', level: Level.info);
+  await StripeService.initialize();
 
   logs('App starting...', level: Level.info);
   runApp(
@@ -53,6 +59,7 @@ class MyApp extends StatelessWidget {
           'search_screen': (context) => const SearchScreen(),
           'basket_screen': (context) => const BasketScreen(),
           'profile_screen': (context) => const ProfileScreen(),
+          'payment_screen': (context) => const PaymentScreen(),
         },
       ),
     );

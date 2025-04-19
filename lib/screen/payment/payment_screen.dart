@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:game_gear/shared/constant/app_theme.dart';
+import 'package:game_gear/shared/service/stripe_service.dart';
 import 'package:game_gear/shared/widget/input_widget.dart';
 import 'package:game_gear/shared/widget/snackbar_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:game_gear/shared/model/basket_model.dart';
+import 'package:game_gear/shared/utils/logger_util.dart';
+import 'package:logger/logger.dart';
 
 import '../../shared/widget/appbar_widget.dart';
 
@@ -22,6 +26,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
   final TextEditingController _cardHolderController = TextEditingController();
   bool _saveCard = false;
   bool _isProcessing = false;
+  String _paymentMethod = 'card'; // Default payment method
+
+  @override
+  void initState() {
+    super.initState();
+    // For testing, you can pre-fill with test card details
+    _cardNumberController.text = '4242 4242 4242 4242'; // Test card number
+    _validUntilController.text = '12/24';
+    _cvvController.text = '123';
+    _cardHolderController.text = 'Test User';
+  }
 
   @override
   void dispose() {
@@ -34,12 +49,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   // Validate card details before submission
   bool _validateCardDetails() {
+    logs('Validating card details', level: Level.info);
+    
     // Card number validation (16 digits)
     if (_cardNumberController.text.replaceAll(' ', '').length != 16) {
       SnackbarWidget.show(
         context: context,
         message: 'Please enter a valid 16-digit card number',
       );
+      logs('Invalid card number', level: Level.warning);
       return false;
     }
 
@@ -50,6 +68,45 @@ class _PaymentScreenState extends State<PaymentScreen> {
         context: context,
         message: 'Please enter a valid expiration date (MM/YY)',
       );
+      logs('Invalid expiration date format', level: Level.warning);
+      return false;
+    }
+
+    // Split the expiry date to get month and year
+    final parts = validUntil.split('/');
+    if (parts.length != 2) {
+      SnackbarWidget.show(
+        context: context,
+        message: 'Please enter a valid expiration date (MM/YY)',
+      );
+      logs('Invalid expiration date parts', level: Level.warning);
+      return false;
+    }
+
+    // Parse month and year
+    final month = int.tryParse(parts[0]);
+    final year = int.tryParse(parts[1]);
+    if (month == null || year == null || month < 1 || month > 12) {
+      SnackbarWidget.show(
+        context: context,
+        message: 'Please enter a valid month (01-12)',
+      );
+      logs('Invalid month or year', level: Level.warning);
+      return false;
+    }
+
+    // Check if card is expired
+    final now = DateTime.now();
+    final cardYear = 2000 + year; // Convert 2-digit year to 4-digit
+    final isExpired = cardYear < now.year || 
+                     (cardYear == now.year && month < now.month);
+    
+    if (isExpired) {
+      SnackbarWidget.show(
+        context: context,
+        message: 'Your card has expired',
+      );
+      logs('Card has expired', level: Level.warning);
       return false;
     }
 
@@ -59,6 +116,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         context: context,
         message: 'Please enter a valid CVV',
       );
+      logs('Invalid CVV', level: Level.warning);
       return false;
     }
 
@@ -68,15 +126,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
         context: context,
         message: 'Please enter the card holder name',
       );
+      logs('Empty card holder name', level: Level.warning);
       return false;
     }
 
+    logs('Card validation successful', level: Level.info);
     return true;
   }
 
-  // Process payment
+  // Process payment with Stripe
   Future<void> _processPayment() async {
+    logs('Starting payment process', level: Level.info);
+    
     if (!_validateCardDetails()) {
+      logs('Card validation failed', level: Level.warning);
       return;
     }
 
@@ -85,47 +148,97 @@ class _PaymentScreenState extends State<PaymentScreen> {
     });
 
     try {
-      // Simulate payment processing
-      await Future.delayed(const Duration(seconds: 2));
-
-      // Clear the basket after successful payment
-      if (mounted) {
-        final basketModel = Provider.of<BasketModel>(context, listen: false);
-        basketModel.clearBasket();
-      }
-
-      // Processing complete
-      setState(() {
-        _isProcessing = false;
-      });
-
-      // Show success message and return to previous screen
-      if (mounted) {
+      final basketModel = Provider.of<BasketModel>(context, listen: false);
+      final totalAmount = basketModel.totalPrice;
+      
+      if (totalAmount <= 0) {
         SnackbarWidget.show(
           context: context,
-          message: 'Payment successful!',
-          backgroundColor: Colors.green.shade800,
+          message: 'Your basket is empty',
         );
-
-        // Return to previous screen after a short delay
-        Future.delayed(const Duration(seconds: 1), () {
-          if (mounted) {
-            Navigator.pop(context);
-          }
+        logs('Attempted payment with empty basket', level: Level.warning);
+        setState(() {
+          _isProcessing = false;
         });
+        return;
+      }
+      
+      logs('Processing payment for amount: $totalAmount', level: Level.info);
+      
+      // Split the expiry date to get month and year
+      final validUntil = _validUntilController.text;
+      final parts = validUntil.split('/');
+      final expiryMonth = parts[0];
+      final expiryYear = '20${parts[1]}'; // Convert YY to YYYY
+      
+      logs('Card details: Expiry $expiryMonth/$expiryYear', level: Level.info);
+      
+      // Process payment with custom card
+      final result = await StripeService.processPaymentWithCustomCard(
+        amount: totalAmount,
+        currency: 'usd', // Change as needed based on your app's requirements
+        cardNumber: _cardNumberController.text,
+        expiryMonth: expiryMonth,
+        expiryYear: expiryYear,
+        cvc: _cvvController.text,
+        cardHolderName: _cardHolderController.text,
+        context: context,
+      );
+
+      // Check if payment was successful
+      if (result['success']) {
+        logs('Payment successful', level: Level.info);
+        
+        // Clear the basket after successful payment
+        if (mounted) {
+          basketModel.clearBasket();
+          logs('Basket cleared after payment', level: Level.info);
+        }
+        
+        // Show success message and return to previous screen
+        if (mounted) {
+          SnackbarWidget.show(
+            context: context,
+            message: 'Payment successful!',
+            backgroundColor: Colors.green.shade800,
+          );
+
+          // Return to previous screen after a short delay
+          Future.delayed(const Duration(seconds: 1), () {
+            if (mounted) {
+              logs('Navigating back after successful payment', level: Level.info);
+              Navigator.pop(context);
+            }
+          });
+        }
+      } else {
+        // Show error message
+        logs('Payment failed: ${result['message']}', level: Level.error);
+        if (mounted) {
+          SnackbarWidget.show(
+            context: context,
+            message: 'Payment failed: ${result['message']}',
+            backgroundColor: Colors.red.shade800,
+          );
+        }
       }
     } catch (e) {
       // Handle payment error
-      setState(() {
-        _isProcessing = false;
-      });
-
+      logs('Exception during payment: $e', level: Level.error);
       if (mounted) {
         SnackbarWidget.show(
           context: context,
           message: 'Payment failed: ${e.toString()}',
           backgroundColor: Colors.red.shade800,
         );
+      }
+    } finally {
+      // Reset processing state
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+        logs('Payment processing state reset', level: Level.info);
       }
     }
   }
@@ -341,8 +454,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        style: AppTheme.buttonStyle,
-        onPressed: _isProcessing ? null : _processPayment,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black, // Filled black background
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),        onPressed: _isProcessing ? null : _processPayment,
         child: _isProcessing
             ? const SizedBox(
                 height: 20,
@@ -357,6 +475,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white
                 ),
               ),
       ),
