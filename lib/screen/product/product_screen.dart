@@ -53,8 +53,10 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   void _incrementQuantity() {
-    setState(() => quantity++);
-    logs("Quantity increased to $quantity", level: Level.debug);
+    if (quantity < (_product?.quantity ?? 0)) {
+      setState(() => quantity++);
+      logs("Quantity increased to $quantity", level: Level.debug);
+    }
   }
 
   void _addToBasket(BasketModel basketModel) {
@@ -170,10 +172,16 @@ class _ProductScreenState extends State<ProductScreen> {
                       Text('$quantity', style: const TextStyle(fontSize: 18)),
                 ),
                 MaterialButton(
-                  color: AppTheme.accentColor,
+                  color: quantity < (_product?.quantity ?? 0)
+                      ? AppTheme.accentColor
+                      : AppTheme.greyShadeColor,
                   shape: const CircleBorder(),
                   onPressed: _incrementQuantity,
                   child: Icon(Icons.add, color: AppTheme.primaryColor),
+                ),
+                Text(
+                  '${product.quantity} available',
+                  style: AppTheme.titleStyle,
                 ),
               ],
             ),
@@ -209,9 +217,11 @@ class _ProductScreenState extends State<ProductScreen> {
                     Text('\$${(product.price * quantity).toStringAsFixed(2)}',
                         style: AppTheme.titleStyle),
                     const SizedBox(height: 5),
-                    const Text('Total payable',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Total payable',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ],
                 ),
                 if (!isShopOwner)

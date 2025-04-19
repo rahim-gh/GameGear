@@ -1,3 +1,4 @@
 {
-    "java.server.launchMode": "LightWeight"
+  "java.server.launchMode": "LightWeight",
+  "dart.flutterSdkPath": ".fvm/versions/3.29.2"
 }
